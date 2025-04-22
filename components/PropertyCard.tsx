@@ -2,31 +2,33 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bed, Bath, MapPin } from 'lucide-react';
+import { Bed, Bath } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
 
-interface PropertyCardProps {
-  property: {
-    id: number;
-    title: string;
-    price: number;
-    currency: string;
-    period: string;
-    bedrooms: number;
-    bathrooms: number;
-    location: string;
-    distance: string;
-    image: string;
-  };
+interface Property {
+  id: number;
+  title: string;
+  price: number;
+  currency: string;
+  period: string;
+  bedrooms: number;
+  bathrooms: number;
+  location: string;
+  distance: string;
+  image: string;
 }
 
-const PropertyCard = ({ property }: PropertyCardProps) => {
+interface PropertyCardProps {
+  property: Property;
+}
+
+export default function PropertyCard({ property }: PropertyCardProps) {
   const { language } = useLanguage();
-  const t = translations[language];
+  const t = translations[language as keyof typeof translations];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
       <div className="relative h-48">
         <Image
           src={property.image}
@@ -35,45 +37,31 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           className="object-cover"
         />
       </div>
-      
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          {property.title}
-        </h3>
-        
-        <div className="flex items-center text-gray-600 dark:text-gray-400 mb-2">
-          <MapPin className="h-4 w-4 mr-1" />
-          <span className="text-sm">{property.location}</span>
-        </div>
-        
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center text-gray-600 dark:text-gray-400">
-            <Bed className="h-4 w-4 mr-1" />
-            <span className="text-sm">{property.bedrooms} {t.featured.rooms}</span>
+        <h3 className="text-lg font-semibold mb-1">{property.title}</h3>
+        <p className="text-gray-600 text-sm mb-2">{property.location}</p>
+        <div className="flex items-center gap-4 mb-3">
+          <div className="flex items-center gap-1">
+            <Bed className="w-4 h-4 text-gray-600" />
+            <span className="text-sm text-gray-600">{property.bedrooms} {t.property.bedrooms}</span>
           </div>
-          <div className="flex items-center text-gray-600 dark:text-gray-400">
-            <Bath className="h-4 w-4 mr-1" />
-            <span className="text-sm">{property.bathrooms} {t.featured.bathrooms}</span>
-          </div>
-          <div className="text-gray-600 dark:text-gray-400 text-sm">
-            {property.distance}
+          <div className="flex items-center gap-1">
+            <Bath className="w-4 h-4 text-gray-600" />
+            <span className="text-sm text-gray-600">{property.bathrooms} {t.property.bathrooms}</span>
           </div>
         </div>
-        
-        <div className="flex items-center justify-between">
-          <div className="text-primary font-semibold">
-            {property.currency} {property.price.toLocaleString()} {t.featured.perMonth}
+        <div className="space-y-3">
+          <div className="text-lg font-bold text-primary">
+            {property.currency} {property.price.toLocaleString()} <span className="text-sm font-normal text-gray-600">{t.property.perMonth}</span>
           </div>
           <Link 
-            href={`/property/${property.id}`}
-            className="text-sm text-primary hover:underline"
+            href={`/properties/${property.id}`}
+            className="block w-full text-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-300"
           >
-            View Details
+            {t.property.viewDetails}
           </Link>
         </div>
       </div>
     </div>
   );
-};
-
-export default PropertyCard;
+}

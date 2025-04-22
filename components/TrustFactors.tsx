@@ -1,6 +1,6 @@
 "use client"
 
-import { Shield, CreditCard, Headphones } from 'lucide-react';
+import { Shield, CreditCard, Users, Star } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
 
@@ -10,30 +10,35 @@ const TrustFactors = () => {
 
   const factors = [
     {
-      icon: <Shield className="h-8 w-8 text-primary" />,
-      title: t.trust.verified.title,
-      description: t.trust.verified.description
+      icon: <Shield className="h-12 w-12 text-primary" />,
+      title: t.features.verified.title,
+      description: t.features.verified.description
     },
     {
-      icon: <CreditCard className="h-8 w-8 text-primary" />,
-      title: t.trust.secure.title,
-      description: t.trust.secure.description
+      icon: <CreditCard className="h-12 w-12 text-primary" />,
+      title: t.features.secure.title,
+      description: t.features.secure.description
     },
     {
-      icon: <Headphones className="h-8 w-8 text-primary" />,
-      title: t.trust.support.title,
-      description: t.trust.support.description
+      icon: <Users className="h-12 w-12 text-primary" />,
+      title: 'Verified Landlords',
+      description: 'All landlords are verified to ensure a safe and reliable rental experience'
+    },
+    {
+      icon: <Star className="h-12 w-12 text-primary" />,
+      title: 'Quality Properties',
+      description: 'We only list properties that meet our high quality standards'
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
       {factors.map((factor, index) => (
         <div 
           key={index}
-          className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+          className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-center"
         >
-          <div className="mb-4">
+          <div className="flex justify-center mb-4">
             {factor.icon}
           </div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">

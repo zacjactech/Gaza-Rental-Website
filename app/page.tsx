@@ -71,7 +71,7 @@ export default function Home() {
     {
       id: 1,
       name: 'Mary N.',
-      role: t.testimonials.tenant,
+      role: 'Tenant',
       rating: 5,
       comment: 'Found my perfect apartment in just 3 days. The booking process was so easy!',
       image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
@@ -79,7 +79,7 @@ export default function Home() {
     {
       id: 2,
       name: 'Mary N.',
-      role: t.testimonials.tenant,
+      role: 'Tenant',
       rating: 5,
       comment: 'Amazing platform for finding good houses in Dar es Salaam. Highly recommended!',
       image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
@@ -87,7 +87,7 @@ export default function Home() {
     {
       id: 3,
       name: 'Mary N.',
-      role: t.testimonials.tenant,
+      role: 'Tenant',
       rating: 5,
       comment: 'The map feature helped me find a place close to my workplace. Very convenient!',
       image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
@@ -95,7 +95,7 @@ export default function Home() {
     {
       id: 4,
       name: 'Mary N.',
-      role: t.testimonials.tenant,
+      role: 'Tenant',
       rating: 5,
       comment: 'Payment was secure and the landlord was verified. Great experience overall!',
       image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
