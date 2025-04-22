@@ -47,22 +47,22 @@ export default function MapViewPage() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('location') || '');
   const [priceRange, setPriceRange] = useState('');
   const [properties] = useState<Property[]>([
-    {
-      id: 1,
+  {
+    id: 1,
       title: "Modern Apartment in City Center",
       price: 1200,
       currency: "USD",
       period: "month",
-      bedrooms: 2,
-      bathrooms: 1,
+    bedrooms: 2,
+    bathrooms: 1,
       location: "Gaza City",
       distance: "2.5 km from center",
       image: "/images/property1.jpg",
       coordinates: [31.5014, 34.4668],
       amenities: ["Parking", "Security", "Gym"]
-    },
-    {
-      id: 2,
+  },
+  {
+    id: 2,
       title: "Luxury Villa with Pool",
       price: 2500,
       currency: "USD",
@@ -74,32 +74,32 @@ export default function MapViewPage() {
       image: "/images/property2.jpg",
       coordinates: [31.5114, 34.4568],
       amenities: ["Pool", "Garden", "Parking", "Security"]
-    },
-    {
-      id: 3,
+  },
+  {
+    id: 3,
       title: "Studio Apartment",
       price: 800,
       currency: "USD",
       period: "month",
-      bedrooms: 1,
-      bathrooms: 1,
+    bedrooms: 1,
+    bathrooms: 1,
       location: "Shati",
       distance: "3 km from center",
       image: "/images/property3.jpg",
       coordinates: [31.5214, 34.4468],
       amenities: ["Security", "Parking"]
-    },
-    {
-      id: 4,
-      title: 'Family 4BR House in Oyster Bay',
-      price: 750000,
-      currency: 'TZS',
-      period: 'month',
-      bedrooms: 4,
-      bathrooms: 3,
-      location: 'Oyster Bay, Dar es Salaam',
-      distance: '4 km to center',
-      image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+  },
+  {
+    id: 4,
+    title: 'Family 4BR House in Oyster Bay',
+    price: 750000,
+    currency: 'TZS',
+    period: 'month',
+    bedrooms: 4,
+    bathrooms: 3,
+    location: 'Oyster Bay, Dar es Salaam',
+    distance: '4 km to center',
+    image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       coordinates: [-6.755, 39.265] as LatLngTuple,
       amenities: ["Parking", "Security", "Garden", "Pool"]
     }
