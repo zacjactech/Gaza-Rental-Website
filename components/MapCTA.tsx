@@ -1,34 +1,33 @@
+"use client"
+
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/translations';
 
 const MapCTA = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   return (
-    <section className="py-16 bg-white dark:bg-gray-900">
+    <section className="py-16 bg-primary/5">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between bg-gray-100 dark:bg-gray-800 rounded-lg p-6 md:p-10">
-          <div className="flex flex-col md:flex-row items-center mb-6 md:mb-0">
-            <div className="bg-primary/10 p-4 rounded-full mb-4 md:mb-0 md:mr-6">
-              <MapPin className="h-8 w-8 text-primary" />
-            </div>
-            <div className="text-center md:text-left">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Prefer to browse on a Map?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 max-w-md">
-                Explore rentals based on location and neighborhood
-              </p>
-            </div>
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
+            <MapPin className="h-8 w-8 text-primary" />
           </div>
-          
-          <Button 
-            className="bg-primary hover:bg-primary/90 text-white"
-            asChild
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            {t.mapCTA.title}
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            {t.mapCTA.subtitle}
+          </p>
+          <Link 
+            href="/map-view" 
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
           >
-            <Link href="/map-view">
-              View Map
-            </Link>
-          </Button>
+            {t.mapCTA.button}
+          </Link>
         </div>
       </div>
     </section>

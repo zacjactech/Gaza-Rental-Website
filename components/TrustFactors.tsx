@@ -1,27 +1,37 @@
-import { Shield, Users } from 'lucide-react';
+"use client"
+
+import { Shield, CreditCard, Headphones } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/translations';
 
 const TrustFactors = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   const factors = [
     {
-      id: 1,
-      icon: <Shield className="h-12 w-12 text-primary" />,
-      title: 'Verified Landlords',
-      description: 'All landlords are verified to ensure security and trust'
+      icon: <Shield className="h-8 w-8 text-primary" />,
+      title: t.trust.verified.title,
+      description: t.trust.verified.description
     },
     {
-      id: 2,
-      icon: <Users className="h-12 w-12 text-primary" />,
-      title: 'Verified Tenants',
-      description: 'We verify tenants to ensure safety and reliability'
+      icon: <CreditCard className="h-8 w-8 text-primary" />,
+      title: t.trust.secure.title,
+      description: t.trust.secure.description
+    },
+    {
+      icon: <Headphones className="h-8 w-8 text-primary" />,
+      title: t.trust.support.title,
+      description: t.trust.support.description
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {factors.map(factor => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {factors.map((factor, index) => (
         <div 
-          key={factor.id} 
-          className="flex flex-col items-center bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center hover-scale"
+          key={index}
+          className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
         >
           <div className="mb-4">
             {factor.icon}
