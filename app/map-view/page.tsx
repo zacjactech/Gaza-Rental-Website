@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, List, MapPin } from 'lucide-react';
+import { Search, Filter, List, MapPin, X } from 'lucide-react';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 
@@ -78,6 +78,77 @@ const properties = [
 
 export default function MapViewPage() {
   const [showList, setShowList] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priceRange, setPriceRange] = useState('');
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    bedrooms: '',
+    bathrooms: '',
+    propertyType: '',
+    minPrice: '',
+    maxPrice: ''
+  });
+
+  // Filter properties based on search query and filters
+  useEffect(() => {
+    let filtered = [...properties];
+    
+    // Filter by search query (location or title)
+    if (searchQuery) {
+      filtered = filtered.filter(property => 
+        property.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        property.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // Filter by price range
+    if (priceRange) {
+      const [min, max] = priceRange.split('-').map(Number);
+      filtered = filtered.filter(property => {
+        if (max) {
+          return property.price >= min && property.price <= max;
+        } else {
+          return property.price >= min;
+        }
+      });
+    }
+
+    // Apply additional filters
+    if (filters.bedrooms) {
+      filtered = filtered.filter(property => property.bedrooms === parseInt(filters.bedrooms));
+    }
+    if (filters.bathrooms) {
+      filtered = filtered.filter(property => property.bathrooms === parseInt(filters.bathrooms));
+    }
+    if (filters.minPrice) {
+      filtered = filtered.filter(property => property.price >= parseInt(filters.minPrice));
+    }
+    if (filters.maxPrice) {
+      filtered = filtered.filter(property => property.price <= parseInt(filters.maxPrice));
+    }
+    
+    setFilteredProperties(filtered);
+  }, [searchQuery, priceRange, filters]);
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      bedrooms: '',
+      bathrooms: '',
+      propertyType: '',
+      minPrice: '',
+      maxPrice: ''
+    });
+    setPriceRange('');
+    setSearchQuery('');
+  };
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -95,25 +166,37 @@ export default function MapViewPage() {
                 </div>
                 <input
                   type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Search area or neighborhood"
                 />
               </div>
               
               <div className="col-span-1">
-                <select className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <select 
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                >
                   <option value="">Price Range</option>
                   <option value="0-200000">Under 200,000 TZS</option>
                   <option value="200000-300000">200,000 - 300,000 TZS</option>
                   <option value="300000-500000">300,000 - 500,000 TZS</option>
-                  <option value="500000+">Above 500,000 TZS</option>
+                  <option value="500000-">Above 500,000 TZS</option>
                 </select>
               </div>
               
               <div className="col-span-1">
-                <Button className="w-full flex items-center justify-center gap-2">
+                <Button 
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setPriceRange('');
+                  }}
+                >
                   <Search className="h-4 w-4" />
-                  Search this area
+                  Clear Filters
                 </Button>
               </div>
             </div>
@@ -135,24 +218,110 @@ export default function MapViewPage() {
           <Button 
             variant="outline" 
             size="sm" 
+            onClick={() => setShowFilters(true)}
             className="bg-white dark:bg-gray-800 flex items-center gap-1"
           >
             <Filter className="h-4 w-4" />
             Filters
           </Button>
         </div>
+
+        {/* Filter Drawer */}
+        {showFilters && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 w-full md:w-[500px] h-[80vh] md:h-auto rounded-t-xl md:rounded-xl p-6 overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Filters</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowFilters(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Bedrooms</label>
+                  <select
+                    value={filters.bedrooms}
+                    onChange={(e) => handleFilterChange('bedrooms', e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="">Any</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Bathrooms</label>
+                  <select
+                    value={filters.bathrooms}
+                    onChange={(e) => handleFilterChange('bathrooms', e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="">Any</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Price Range</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      value={filters.minPrice}
+                      onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                      className="w-1/2 px-3 py-2 border rounded-md"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      value={filters.maxPrice}
+                      onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                      className="w-1/2 px-3 py-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={clearFilters}
+                  >
+                    Clear All
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={() => setShowFilters(false)}
+                  >
+                    Apply Filters
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
-        <div className="grid grid-cols-1 h-[calc(100vh-240px)] md:h-[calc(100vh-200px)]">
+        <div className="grid grid-cols-1 h-[calc(100vh-240px)] md:h-[calc(100vh-200px)] pb-16">
           {showList ? (
             <div className="overflow-auto p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {properties.map(property => (
+                {filteredProperties.map(property => (
                   <PropertyCard key={property.id} property={property} />
                 ))}
               </div>
             </div>
           ) : (
-            <MapComponent properties={properties} />
+            <MapComponent properties={filteredProperties} />
           )}
         </div>
       </div>
