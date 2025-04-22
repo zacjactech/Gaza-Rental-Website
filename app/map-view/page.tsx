@@ -6,6 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Search, Filter, List, MapPin, X } from 'lucide-react';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
+import { LatLngTuple } from 'leaflet';
+import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/translations';
 
 // Dynamically import the map component to avoid SSR issues
 const MapComponent = dynamic(() => import('@/components/MapComponent'), {
@@ -20,131 +24,137 @@ const MapComponent = dynamic(() => import('@/components/MapComponent'), {
   )
 });
 
-// Mock properties data
-const properties = [
-  {
-    id: 1,
-    title: 'Cozy 2BR Apartment in Mikocheni',
-    price: 250000,
-    currency: 'TZS',
-    period: 'month',
-    bedrooms: 2,
-    bathrooms: 1,
-    location: 'Mikocheni, Dar es Salaam',
-    distance: '5 km to center',
-    image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    coordinates: { lat: -6.765, lng: 39.245 }
-  },
-  {
-    id: 2,
-    title: 'Modern 3BR Villa in Masaki',
-    price: 500000,
-    currency: 'TZS',
-    period: 'month',
-    bedrooms: 3,
-    bathrooms: 2,
-    location: 'Masaki, Dar es Salaam',
-    distance: '3 km to center',
-    image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    coordinates: { lat: -6.775, lng: 39.275 }
-  },
-  {
-    id: 3,
-    title: 'Spacious 1BR Apartment in Mbezi',
-    price: 180000,
-    currency: 'TZS',
-    period: 'month',
-    bedrooms: 1,
-    bathrooms: 1,
-    location: 'Mbezi, Dar es Salaam',
-    distance: '10 km to center',
-    image: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    coordinates: { lat: -6.735, lng: 39.225 }
-  },
-  {
-    id: 4,
-    title: 'Family 4BR House in Oyster Bay',
-    price: 750000,
-    currency: 'TZS',
-    period: 'month',
-    bedrooms: 4,
-    bathrooms: 3,
-    location: 'Oyster Bay, Dar es Salaam',
-    distance: '4 km to center',
-    image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    coordinates: { lat: -6.755, lng: 39.265 }
-  }
-];
+interface Property {
+  id: number;
+  title: string;
+  price: number;
+  currency: string;
+  period: string;
+  bedrooms: number;
+  bathrooms: number;
+  location: string;
+  distance: string;
+  image: string;
+  coordinates: LatLngTuple;
+  amenities: string[];
+}
 
 export default function MapViewPage() {
+  const searchParams = useSearchParams();
+  const { language } = useLanguage();
+  const t = translations[language as keyof typeof translations];
   const [showList, setShowList] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('location') || '');
   const [priceRange, setPriceRange] = useState('');
-  const [filteredProperties, setFilteredProperties] = useState(properties);
+  const [properties] = useState<Property[]>([
+    {
+      id: 1,
+      title: "Modern Apartment in City Center",
+      price: 1200,
+      currency: "USD",
+      period: "month",
+      bedrooms: 2,
+      bathrooms: 1,
+      location: "Gaza City",
+      distance: "2.5 km from center",
+      image: "/images/property1.jpg",
+      coordinates: [31.5014, 34.4668],
+      amenities: ["Parking", "Security", "Gym"]
+    },
+    {
+      id: 2,
+      title: "Luxury Villa with Pool",
+      price: 2500,
+      currency: "USD",
+      period: "month",
+      bedrooms: 4,
+      bathrooms: 3,
+      location: "Rimal",
+      distance: "1.5 km from beach",
+      image: "/images/property2.jpg",
+      coordinates: [31.5114, 34.4568],
+      amenities: ["Pool", "Garden", "Parking", "Security"]
+    },
+    {
+      id: 3,
+      title: "Studio Apartment",
+      price: 800,
+      currency: "USD",
+      period: "month",
+      bedrooms: 1,
+      bathrooms: 1,
+      location: "Shati",
+      distance: "3 km from center",
+      image: "/images/property3.jpg",
+      coordinates: [31.5214, 34.4468],
+      amenities: ["Security", "Parking"]
+    },
+    {
+      id: 4,
+      title: 'Family 4BR House in Oyster Bay',
+      price: 750000,
+      currency: 'TZS',
+      period: 'month',
+      bedrooms: 4,
+      bathrooms: 3,
+      location: 'Oyster Bay, Dar es Salaam',
+      distance: '4 km to center',
+      image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      coordinates: [-6.755, 39.265] as LatLngTuple,
+      amenities: ["Parking", "Security", "Garden", "Pool"]
+    }
+  ]);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    bedrooms: '',
-    bathrooms: '',
-    propertyType: '',
-    minPrice: '',
-    maxPrice: ''
+    priceRange: searchParams.get('priceRange') || '',
+    rooms: searchParams.get('rooms') || '',
+    amenities: [] as string[]
   });
 
-  // Filter properties based on search query and filters
-  useEffect(() => {
-    let filtered = [...properties];
-    
-    // Filter by search query (location or title)
-    if (searchQuery) {
-      filtered = filtered.filter(property => 
-        property.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        property.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    // Filter by price range
-    if (priceRange) {
-      const [min, max] = priceRange.split('-').map(Number);
-      filtered = filtered.filter(property => {
-        if (max) {
-          return property.price >= min && property.price <= max;
-        } else {
-          return property.price >= min;
-        }
-      });
-    }
-
-    // Apply additional filters
-    if (filters.bedrooms) {
-      filtered = filtered.filter(property => property.bedrooms === parseInt(filters.bedrooms));
-    }
-    if (filters.bathrooms) {
-      filtered = filtered.filter(property => property.bathrooms === parseInt(filters.bathrooms));
-    }
-    if (filters.minPrice) {
-      filtered = filtered.filter(property => property.price >= parseInt(filters.minPrice));
-    }
-    if (filters.maxPrice) {
-      filtered = filtered.filter(property => property.price <= parseInt(filters.maxPrice));
-    }
-    
-    setFilteredProperties(filtered);
-  }, [searchQuery, priceRange, filters]);
-
-  const handleFilterChange = (key: string, value: string) => {
+  const handleFilterChange = (key: keyof typeof filters, value: string | string[]) => {
     setFilters(prev => ({
       ...prev,
       [key]: value
     }));
   };
 
+  const filteredProperties = properties.filter(property => {
+    // Location search - check both location and title
+    if (searchQuery) {
+      const searchTerm = searchQuery.toLowerCase();
+      const locationMatch = property.location.toLowerCase().includes(searchTerm);
+      const titleMatch = property.title.toLowerCase().includes(searchTerm);
+      if (!locationMatch && !titleMatch) return false;
+    }
+
+    // Price range filter
+    if (filters.priceRange) {
+      const [min, max] = filters.priceRange.split('-').map(Number);
+      if (max && (property.price < min || property.price > max)) return false;
+      if (!max && property.price < min) return false;
+    }
+
+    // Rooms filter
+    if (filters.rooms) {
+      const requiredRooms = parseInt(filters.rooms);
+      if (property.bedrooms < requiredRooms) return false;
+    }
+
+    // Amenities filter
+    if (filters.amenities.length > 0) {
+      if (!filters.amenities.every(amenity => property.amenities.includes(amenity))) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
   const clearFilters = () => {
     setFilters({
-      bedrooms: '',
-      bathrooms: '',
-      propertyType: '',
-      minPrice: '',
-      maxPrice: ''
+      priceRange: '',
+      rooms: '',
+      amenities: []
     });
     setPriceRange('');
     setSearchQuery('');
@@ -225,7 +235,7 @@ export default function MapViewPage() {
             Filters
           </Button>
         </div>
-
+        
         {/* Filter Drawer */}
         {showFilters && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:items-center justify-center">
@@ -243,10 +253,10 @@ export default function MapViewPage() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Bedrooms</label>
+                  <label className="block text-sm font-medium mb-2">Rooms</label>
                   <select
-                    value={filters.bedrooms}
-                    onChange={(e) => handleFilterChange('bedrooms', e.target.value)}
+                    value={filters.rooms}
+                    onChange={(e) => handleFilterChange('rooms', e.target.value)}
                     className="w-full px-3 py-2 border rounded-md"
                   >
                     <option value="">Any</option>
@@ -258,37 +268,19 @@ export default function MapViewPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Bathrooms</label>
+                  <label className="block text-sm font-medium mb-2">Amenities</label>
                   <select
-                    value={filters.bathrooms}
-                    onChange={(e) => handleFilterChange('bathrooms', e.target.value)}
+                    value={filters.amenities.join(',')}
+                    onChange={(e) => handleFilterChange('amenities', e.target.value.split(','))}
                     className="w-full px-3 py-2 border rounded-md"
+                    multiple
                   >
                     <option value="">Any</option>
-                    <option value="1">1+</option>
-                    <option value="2">2+</option>
-                    <option value="3">3+</option>
+                    <option value="air-conditioning">Air Conditioning</option>
+                    <option value="parking">Parking</option>
+                    <option value="gym">Gym</option>
+                    <option value="swimming-pool">Swimming Pool</option>
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Price Range</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      placeholder="Min"
-                      value={filters.minPrice}
-                      onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                      className="w-1/2 px-3 py-2 border rounded-md"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Max"
-                      value={filters.maxPrice}
-                      onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                      className="w-1/2 px-3 py-2 border rounded-md"
-                    />
-                  </div>
                 </div>
 
                 <div className="flex gap-2 pt-4">
@@ -311,7 +303,7 @@ export default function MapViewPage() {
           </div>
         )}
         
-        <div className="grid grid-cols-1 h-[calc(100vh-240px)] md:h-[calc(100vh-200px)] pb-16">
+        <div className="grid grid-cols-1 h-[calc(100vh-180px)] md:h-[calc(100vh-140px)] pb-8">
           {showList ? (
             <div className="overflow-auto p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

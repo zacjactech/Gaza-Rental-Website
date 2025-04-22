@@ -7,18 +7,20 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function BrowsePage() {
+  const searchParams = useSearchParams();
   const { language } = useLanguage();
   const t = translations[language as keyof typeof translations];
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
   const [filters, setFilters] = useState({
-    location: '',
+    location: searchParams.get('location') || '',
     propertyType: '',
-    priceRange: '',
-    bedrooms: '',
+    priceRange: searchParams.get('priceRange') || '',
+    bedrooms: searchParams.get('rooms') || '',
     bathrooms: '',
     amenities: [] as string[]
   });
@@ -266,15 +268,39 @@ export default function BrowsePage() {
   // Sort and filter properties
   const filteredProperties = properties
     .filter(property => {
-      if (filters.location && !property.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
-      if (filters.propertyType && property.title.toLowerCase().indexOf(filters.propertyType.toLowerCase()) === -1) return false;
+      // Location search - check both location and title
+      if (filters.location) {
+        const searchTerm = filters.location.toLowerCase();
+        const locationMatch = property.location.toLowerCase().includes(searchTerm);
+        const titleMatch = property.title.toLowerCase().includes(searchTerm);
+        if (!locationMatch && !titleMatch) return false;
+      }
+
+      // Property type filter
+      if (filters.propertyType) {
+        const propertyType = filters.propertyType.toLowerCase();
+        if (!property.title.toLowerCase().includes(propertyType)) return false;
+      }
+
+      // Price range filter
       if (filters.priceRange) {
         const [min, max] = filters.priceRange.split('-').map(Number);
         if (max && (property.price < min || property.price > max)) return false;
         if (!max && property.price < min) return false;
       }
-      if (filters.bedrooms && property.bedrooms !== Number(filters.bedrooms)) return false;
-      if (filters.bathrooms && property.bathrooms !== Number(filters.bathrooms)) return false;
+
+      // Bedrooms filter
+      if (filters.bedrooms) {
+        const requiredBedrooms = parseInt(filters.bedrooms);
+        if (property.bedrooms < requiredBedrooms) return false;
+      }
+
+      // Bathrooms filter
+      if (filters.bathrooms) {
+        const requiredBathrooms = parseInt(filters.bathrooms);
+        if (property.bathrooms < requiredBathrooms) return false;
+      }
+
       return true;
     })
     .sort((a, b) => {
@@ -478,7 +504,7 @@ export default function BrowsePage() {
         )}
         
         {totalPages > 1 && (
-          <div className="mt-10 flex justify-center">
+        <div className="mt-10 flex justify-center">
             <nav className="flex items-center gap-2">
               <Button 
                 variant="outline" 
@@ -499,7 +525,7 @@ export default function BrowsePage() {
                   className="h-8 w-8"
                 >
                   {page}
-                </Button>
+            </Button>
               ))}
               
               <Button 
@@ -510,9 +536,9 @@ export default function BrowsePage() {
                 className="h-8 w-8"
               >
                 <ChevronRight className="h-4 w-4" />
-              </Button>
-            </nav>
-          </div>
+            </Button>
+          </nav>
+        </div>
         )}
       </div>
       
