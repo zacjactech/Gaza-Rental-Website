@@ -1,7 +1,14 @@
+"use client"
+
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Home, Mail, Phone } from 'lucide-react';
+import { FacebookIcon, Twitter, Instagram, Home, Mail, Phone } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/translations';
 
 const Footer = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6">
       <div className="container mx-auto px-4">
@@ -16,7 +23,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-primary transition-colors">
-                <Facebook className="h-5 w-5" />
+                <FacebookIcon className="h-5 w-5" />
               </a>
               <a href="#" className="text-gray-400 hover:text-primary transition-colors">
                 <Twitter className="h-5 w-5" />
