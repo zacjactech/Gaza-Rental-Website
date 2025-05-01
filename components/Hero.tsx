@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { MapPin, Search, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Hero = () => {
+  const router = useRouter();
   const [location, setLocation] = useState('');
   const [priceRange, setPriceRange] = useState('');
   const [rooms, setRooms] = useState('');
@@ -13,8 +15,15 @@ const Hero = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement search functionality
-    console.log({ location, priceRange, rooms });
+    
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (location) params.append('location', location);
+    if (priceRange) params.append('priceRange', priceRange);
+    if (rooms) params.append('rooms', rooms);
+
+    // Redirect to browse page with search parameters
+    router.push(`/browse?${params.toString()}`);
   };
 
   return (
@@ -58,12 +67,18 @@ const Hero = () => {
                 placeholder={t('priceRange')}
                 value={priceRange}
                 onChange={(e) => setPriceRange(e.target.value)}
-              />
+              >
+                <option value="">{t.hero.priceRange}</option>
+                <option value="0-200000">Under 200,000 TZS</option>
+                <option value="200000-300000">200,000 - 300,000 TZS</option>
+                <option value="300000-500000">300,000 - 500,000 TZS</option>
+                <option value="500000-">Above 500,000 TZS</option>
+              </select>
             </div>
             
             <div className="relative">
               <select
-                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary"
+                className="block w-full pl-3 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary"
                 value={rooms}
                 onChange={(e) => setRooms(e.target.value)}
               >

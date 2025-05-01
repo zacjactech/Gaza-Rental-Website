@@ -1,29 +1,44 @@
-import { Shield, Users } from 'lucide-react';
+"use client"
+
+import { Shield, CreditCard, Users, Star } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/translations';
 
 const TrustFactors = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   const factors = [
     {
-      id: 1,
       icon: <Shield className="h-12 w-12 text-primary" />,
-      title: 'Verified Landlords',
-      description: 'All landlords are verified to ensure security and trust'
+      title: t.features.verified.title,
+      description: t.features.verified.description
     },
     {
-      id: 2,
+      icon: <CreditCard className="h-12 w-12 text-primary" />,
+      title: t.features.secure.title,
+      description: t.features.secure.description
+    },
+    {
       icon: <Users className="h-12 w-12 text-primary" />,
-      title: 'Verified Tenants',
-      description: 'We verify tenants to ensure safety and reliability'
+      title: 'Verified Landlords',
+      description: 'All landlords are verified to ensure a safe and reliable rental experience'
+    },
+    {
+      icon: <Star className="h-12 w-12 text-primary" />,
+      title: 'Quality Properties',
+      description: 'We only list properties that meet our high quality standards'
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {factors.map(factor => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {factors.map((factor, index) => (
         <div 
-          key={factor.id} 
-          className="flex flex-col items-center bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center hover-scale"
+          key={index}
+          className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-center"
         >
-          <div className="mb-4">
+          <div className="flex justify-center mb-4">
             {factor.icon}
           </div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
