@@ -1,7 +1,12 @@
+"use client";
+
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Home, Mail, Phone } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6">
       <div className="container mx-auto px-4">
@@ -21,45 +26,45 @@ const Footer = () => {
               <a href="#" className="text-gray-400 hover:text-primary transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a href="https://www.instagram.com/gazarenter" className="text-gray-400 hover:text-primary transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
             </div>
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+            <h3 className="font-semibold text-lg mb-4">{t('quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-gray-400 hover:text-primary transition-colors">
-                  Home
+                  {t('home')}
                 </Link>
               </li>
               <li>
                 <Link href="/browse" className="text-gray-400 hover:text-primary transition-colors">
-                  Browse Properties
+                  {t('browse')}
                 </Link>
               </li>
               <li>
                 <Link href="/map-view" className="text-gray-400 hover:text-primary transition-colors">
-                  Map View
+                  {t('mapView')}
                 </Link>
               </li>
               <li>
                 <Link href="/landlords" className="text-gray-400 hover:text-primary transition-colors">
-                  For Landlords
+                  {t('landlord')}
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="text-gray-400 hover:text-primary transition-colors">
-                  About Us
+                  {t('about')}
                 </Link>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">Cities</h3>
+            <h3 className="font-semibold text-lg mb-4">{t('cities')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/browse?location=dar-es-salaam" className="text-gray-400 hover:text-primary transition-colors">
@@ -90,7 +95,7 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">Contact Us</h3>
+            <h3 className="font-semibold text-lg mb-4">{t('contactUs')}</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
                 <Mail className="h-5 w-5 text-primary mr-2 mt-0.5" />
@@ -98,11 +103,11 @@ const Footer = () => {
               </li>
               <li className="flex items-start">
                 <Phone className="h-5 w-5 text-primary mr-2 mt-0.5" />
-                <span className="text-gray-400">+255 755 123 456</span>
+                <span className="text-gray-400">+255 0654051913 / +255 742162235</span>
               </li>
               <li className="flex items-start">
                 <Home className="h-5 w-5 text-primary mr-2 mt-0.5" />
-                <span className="text-gray-400">Upanga, Dar es Salaam, Tanzania</span>
+                <span className="text-gray-400">Dar es Salaam, Tanzania</span>
               </li>
             </ul>
           </div>
@@ -111,14 +116,14 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              &copy; {new Date().getFullYear()} GazaRenter. All rights reserved.
+              &copy; {new Date().getFullYear()} GazaRenter. {t('allRightsReserved')}
             </p>
             <div className="flex space-x-4">
               <Link href="/terms" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                Terms of Service
+                {t('termsOfService')}
               </Link>
               <Link href="/privacy" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                Privacy Policy
+                {t('privacyPolicy')}
               </Link>
             </div>
           </div>

@@ -1,206 +1,264 @@
-import PropertyCard from '@/components/PropertyCard';
-import Footer from '@/components/Footer';
-import { Filter, MapPin, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+"use client";
 
-export default function BrowsePage() {
-  // Mock properties data
+import { useState } from 'react';
+import { 
+  MapPin, 
+  Bed, 
+  Bath, 
+  Home, 
+  Filter,
+  SlidersHorizontal,
+  X
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+// Mock data for properties
   const properties = [
     {
       id: 1,
-      title: 'Cozy 2BR Apartment in Mikocheni',
+    title: 'Cozy 2 Bedroom Apartment in Mikocheni',
       price: 250000,
       currency: 'TZS',
       period: 'month',
       bedrooms: 2,
       bathrooms: 1,
+    area: 85,
+    areaUnit: 'sqm',
       location: 'Mikocheni, Dar es Salaam',
-      distance: '5 km to center',
       image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
     },
     {
       id: 2,
-      title: 'Modern 3BR Villa in Masaki',
-      price: 500000,
+    title: 'Modern 3 Bedroom House in Oyster Bay',
+    price: 450000,
       currency: 'TZS',
       period: 'month',
       bedrooms: 3,
       bathrooms: 2,
-      location: 'Masaki, Dar es Salaam',
-      distance: '3 km to center',
-      image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+    area: 150,
+    areaUnit: 'sqm',
+    location: 'Oyster Bay, Dar es Salaam',
+    image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
     },
     {
       id: 3,
-      title: 'Spacious 1BR Apartment in Mbezi',
-      price: 180000,
+    title: 'Luxury 4 Bedroom Villa in Masaki',
+    price: 850000,
       currency: 'TZS',
       period: 'month',
-      bedrooms: 1,
-      bathrooms: 1,
-      location: 'Mbezi, Dar es Salaam',
-      distance: '10 km to center',
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 250,
+    areaUnit: 'sqm',
+    location: 'Masaki, Dar es Salaam',
       image: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
     },
     {
       id: 4,
-      title: 'Family 4BR House in Oyster Bay',
-      price: 750000,
-      currency: 'TZS',
-      period: 'month',
-      bedrooms: 4,
-      bathrooms: 3,
-      location: 'Oyster Bay, Dar es Salaam',
-      distance: '4 km to center',
-      image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-    },
-    {
-      id: 5,
       title: 'Studio Apartment in City Center',
       price: 150000,
       currency: 'TZS',
       period: 'month',
       bedrooms: 1,
       bathrooms: 1,
+    area: 45,
+    areaUnit: 'sqm',
       location: 'City Center, Dar es Salaam',
-      distance: '1 km to center',
       image: 'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-    },
-    {
-      id: 6,
-      title: 'Modern 2BR Apartment in Kinondoni',
-      price: 280000,
-      currency: 'TZS',
-      period: 'month',
-      bedrooms: 2,
-      bathrooms: 1,
-      location: 'Kinondoni, Dar es Salaam',
-      distance: '6 km to center',
-      image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-    },
-    {
-      id: 7,
-      title: 'Luxury 3BR Apartment in Upanga',
-      price: 600000,
-      currency: 'TZS',
-      period: 'month',
-      bedrooms: 3,
-      bathrooms: 2,
-      location: 'Upanga, Dar es Salaam',
-      distance: '2 km to center',
-      image: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-    },
-    {
-      id: 8,
-      title: '1BR Apartment near University',
-      price: 200000,
-      currency: 'TZS',
-      period: 'month',
-      bedrooms: 1,
-      bathrooms: 1,
-      location: 'Ubungo, Dar es Salaam',
-      distance: '8 km to center',
-      image: 'https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+  }
+];
+
+export default function BrowsePage() {
+  const [showFilters, setShowFilters] = useState(false);
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
+  const [selectedBedrooms, setSelectedBedrooms] = useState<number[]>([]);
+  const { t } = useLanguage();
+
+  const toggleBedroom = (bedroom: number) => {
+    if (selectedBedrooms.includes(bedroom)) {
+      setSelectedBedrooms(selectedBedrooms.filter(b => b !== bedroom));
+    } else {
+      setSelectedBedrooms([...selectedBedrooms, bedroom]);
     }
-  ];
+  };
 
   return (
-    <main className="flex min-h-screen flex-col">
-      <div className="bg-primary/10 py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            Browse Properties
-          </h1>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="relative col-span-1 md:col-span-2">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Filters sidebar */}
+          <div className={`w-full md:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden md:block'}`}>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {t('filters')}
+                </h2>
+                <button 
+                  className="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  onClick={() => setShowFilters(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Location filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('location')}
+                  </label>
+                  <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MapPin className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  placeholder="Location, neighborhood, or address"
+                      placeholder={t('enterLocation')}
+                    />
+                  </div>
+                </div>
+
+                {/* Price range filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('priceRange')}
+                  </label>
+                  <Slider
+                    value={priceRange}
+                    onValueChange={setPriceRange}
+                    min={0}
+                    max={1000000}
+                    step={50000}
+                    className="mb-2"
                 />
+                  <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                    <span>TZS {priceRange[0].toLocaleString()}</span>
+                    <span>TZS {priceRange[1].toLocaleString()}</span>
+                  </div>
               </div>
               
-              <div className="col-span-1">
-                <select className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  <option value="">Property Type</option>
-                  <option value="apartment">Apartment</option>
-                  <option value="house">House</option>
-                  <option value="villa">Villa</option>
-                  <option value="studio">Studio</option>
-                </select>
+                {/* Bedrooms filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('bedrooms')}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[1, 2, 3, 4, 5].map((bedroom) => (
+                      <button
+                        key={bedroom}
+                        onClick={() => toggleBedroom(bedroom)}
+                        className={`px-3 py-1 rounded-full text-sm ${
+                          selectedBedrooms.includes(bedroom)
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {bedroom}
+                      </button>
+                    ))}
+                  </div>
               </div>
               
-              <div className="col-span-1">
-                <select className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  <option value="">Price Range</option>
-                  <option value="0-200000">Under 200,000 TZS</option>
-                  <option value="200000-300000">200,000 - 300,000 TZS</option>
-                  <option value="300000-500000">300,000 - 500,000 TZS</option>
-                  <option value="500000+">Above 500,000 TZS</option>
-                </select>
+                <Button className="w-full">
+                  {t('applyFilters')}
+                </Button>
+              </div>
+            </div>
               </div>
               
-              <div className="col-span-1">
-                <Button className="w-full flex items-center justify-center gap-2">
-                  <Search className="h-4 w-4" />
-                  Search
+          {/* Main content */}
+          <div className="flex-1">
+            {/* Search bar and filters toggle */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MapPin className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      placeholder={t('searchLocation')}
+                    />
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <Filter className="h-4 w-4" />
+                  <span className="md:hidden">{t('filters')}</span>
+                  <SlidersHorizontal className="h-4 w-4 md:hidden" />
                 </Button>
               </div>
             </div>
             
-            <div className="mt-4 flex items-center">
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <Filter className="h-4 w-4" />
-                More Filters
-              </Button>
+            {/* Properties grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {properties.map((property) => (
+                <Link 
+                  key={property.id}
+                  href={`/properties/${property.id}`}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
+                >
+                  <div className="relative h-48">
+                    <Image
+                      src={property.image}
+                      alt={property.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      {property.title}
+                    </h3>
+                    <div className="flex items-center text-gray-600 dark:text-gray-400 mb-2">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span className="text-sm">{property.location}</span>
+                    </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center">
+                          <Bed className="h-4 w-4 text-gray-600 dark:text-gray-400 mr-1" />
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {property.bedrooms}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <Bath className="h-4 w-4 text-gray-600 dark:text-gray-400 mr-1" />
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {property.bathrooms}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <Home className="h-4 w-4 text-gray-600 dark:text-gray-400 mr-1" />
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {property.area} {t('sqm')}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-lg font-semibold text-primary">
+                        {property.currency} {property.price.toLocaleString()}
+                        <span className="text-sm text-gray-600 dark:text-gray-400">/{t('month')}</span>
             </div>
           </div>
         </div>
+                </Link>
+              ))}
       </div>
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
-            Showing <span className="font-semibold text-gray-900 dark:text-white">{properties.length}</span> properties
-          </p>
-          
-          <div className="flex items-center">
-            <span className="text-gray-600 dark:text-gray-400 mr-2">Sort by:</span>
-            <select className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-              <option value="newest">Newest</option>
-              <option value="price-asc">Price (Low to High)</option>
-              <option value="price-desc">Price (High to Low)</option>
-            </select>
           </div>
         </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {properties.map(property => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
-        
-        <div className="mt-10 flex justify-center">
-          <nav className="flex items-center gap-1">
-            <Button variant="outline" size="icon" disabled>
-              &lt;
-            </Button>
-            <Button variant="default" size="icon">1</Button>
-            <Button variant="outline" size="icon">2</Button>
-            <Button variant="outline" size="icon">3</Button>
-            <Button variant="outline" size="icon">
-              &gt;
-            </Button>
-          </nav>
         </div>
       </div>
-      
-      <Footer />
-    </main>
   );
 }

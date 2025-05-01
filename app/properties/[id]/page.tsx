@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Footer from '@/components/Footer';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Mock data for a single property
 const property = {
@@ -52,7 +53,7 @@ const property = {
   ],
   landlord: {
     name: 'John Doe',
-    phone: '+255 755 123 456',
+    phone: '+255 0654051913',
     email: 'john.doe@example.com',
     responseRate: 95,
     responseTime: '2 hours',
@@ -79,6 +80,7 @@ const property = {
 export default function PropertyDetail({ params }: { params: { id: string } }) {
   const [mainImage, setMainImage] = useState(property.images[0]);
   const [showContact, setShowContact] = useState(false);
+  const { t } = useLanguage();
   
   const renderStars = (rating: number) => {
     return Array(5).fill(0).map((_, index) => (
@@ -96,7 +98,7 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
           <div className="flex items-center">
             <Link href="/browse" className="flex items-center text-gray-600 dark:text-gray-400 hover:text-primary">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              <span>Back to results</span>
+              <span>{t('back')}</span>
             </Link>
           </div>
         </div>
@@ -119,11 +121,11 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
               <div className="flex items-center space-x-4">
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
                   <Heart className="h-4 w-4" />
-                  Save
+                  {t('save')}
                 </Button>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
                   <Share2 className="h-4 w-4" />
-                  Share
+                  {t('share')}
                 </Button>
               </div>
             </div>
@@ -165,35 +167,35 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
                 <div className="flex items-center">
                   <Bed className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-500">Bedrooms</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500">{t('bedrooms')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">{property.bedrooms}</p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Bath className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-500">Bathrooms</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500">{t('bathrooms')}</p>
                     <p className="font-semibold text-gray-900 dark:text-white">{property.bathrooms}</p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Home className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-500">Area</p>
-                    <p className="font-semibold text-gray-900 dark:text-white">{property.area} {property.areaUnit}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500">{t('area')}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{property.area} {t('sqm')}</p>
                   </div>
                 </div>
               </div>
               
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                About this property
+                {t('aboutProperty')}
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-6">
                 {property.description}
               </p>
               
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                Features & Amenities
+                {t('features')}
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 mb-6">
                 {property.features.map((feature, index) => (
@@ -208,7 +210,7 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
             {/* Reviews */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                Reviews
+                {t('reviews')}
               </h2>
               
               {property.reviews.map(review => (
@@ -227,7 +229,7 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
               ))}
               
               <Button variant="outline" className="w-full">
-                See all reviews
+                {t('view')} {t('reviews')}
               </Button>
             </div>
           </div>
@@ -240,20 +242,20 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
                   <span className="text-2xl font-bold text-primary">
                     {property.currency} {property.price.toLocaleString()}
                   </span>
-                  <span className="text-gray-600 dark:text-gray-400 ml-1">/{property.period}</span>
+                  <span className="text-gray-600 dark:text-gray-400 ml-1">/{t('month')}</span>
                 </div>
                 
                 <div className="border-t border-b border-gray-200 dark:border-gray-700 py-4 my-4">
                   <Tabs defaultValue="book">
                     <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="book">Book Now</TabsTrigger>
-                      <TabsTrigger value="contact">Contact</TabsTrigger>
+                      <TabsTrigger value="book">{t('bookNow')}</TabsTrigger>
+                      <TabsTrigger value="contact">{t('contact')}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="book" className="pt-4">
                       <form className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Move-in Date
+                            {t('moveInDate')}
                           </label>
                           <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -268,19 +270,19 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
                         
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Duration
+                            {t('duration')}
                           </label>
                           <select className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                            <option value="3">3 months</option>
-                            <option value="6">6 months</option>
-                            <option value="12" selected>12 months</option>
-                            <option value="24">24 months</option>
+                            <option value="3">3 {t('month')}s</option>
+                            <option value="6">6 {t('month')}s</option>
+                            <option value="12" selected>12 {t('month')}s</option>
+                            <option value="24">24 {t('month')}s</option>
                           </select>
                         </div>
                         
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Payment Method
+                            {t('paymentMethod')}
                           </label>
                           <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -295,7 +297,7 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
                           </div>
                         </div>
                         
-                        <Button className="w-full">Book Now</Button>
+                        <Button className="w-full">{t('bookNow')}</Button>
                       </form>
                     </TabsContent>
                     <TabsContent value="contact" className="pt-4">
@@ -314,7 +316,7 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
                               onClick={() => setShowContact(true)}
                               className="text-primary p-0 h-auto"
                             >
-                              Show Phone Number
+                              {t('showPhoneNumber')}
                             </Button>
                           )}
                         </div>
@@ -333,17 +335,17 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
                               onClick={() => setShowContact(true)}
                               className="text-primary p-0 h-auto"
                             >
-                              Show Email
+                              {t('showEmail')}
                             </Button>
                           )}
                         </div>
                         
                         <div className="pt-4">
                           <textarea
-                            placeholder="Write a message to the landlord..."
+                            placeholder={t('writeMessage')}
                             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-h-[120px]"
                           ></textarea>
-                          <Button className="w-full mt-2">Send Message</Button>
+                          <Button className="w-full mt-2">{t('sendMessage')}</Button>
                         </div>
                       </div>
                     </TabsContent>
@@ -365,12 +367,12 @@ export default function PropertyDetail({ params }: { params: { id: string } }) {
                       {property.landlord.name}
                       {property.landlord.verified && (
                         <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                          Verified
+                          {t('verified')}
                         </span>
                       )}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Responds in {property.landlord.responseTime}
+                      {t('respondsIn')} {property.landlord.responseTime}
                     </p>
                   </div>
                 </div>
