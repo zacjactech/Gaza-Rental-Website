@@ -1,30 +1,41 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Show button when page is scrolled down
-  const toggleVisibility = () => {
+  // Throttled scroll handler for better performance
+  const toggleVisibility = useCallback(() => {
     if (window.scrollY > 300) {
-      setIsVisible(true);
+      if (!isVisible) setIsVisible(true);
     } else {
-      setIsVisible(false);
+      if (isVisible) setIsVisible(false);
     }
-  };
+  }, [isVisible]);
 
-  // Set up scroll event listener
+  // Set up throttled scroll event listener
   useEffect(() => {
-    window.addEventListener('scroll', toggleVisibility, { passive: true });
+    let throttleTimeout: NodeJS.Timeout | null = null;
+    
+    const handleScroll = () => {
+      if (throttleTimeout === null) {
+        throttleTimeout = setTimeout(() => {
+          toggleVisibility();
+          throttleTimeout = null;
+        }, 200);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
-      window.removeEventListener('scroll', toggleVisibility);
+      window.removeEventListener('scroll', handleScroll);
+      if (throttleTimeout) clearTimeout(throttleTimeout);
     };
-  }, []);
+  }, [toggleVisibility]);
 
   // Scroll to top smooth function
   const scrollToTop = () => {
@@ -34,26 +45,20 @@ export default function ScrollToTop() {
     });
   };
 
+  if (!isVisible) return null;
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          className="fixed bottom-4 right-4 z-40"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.2 }}
-        >
-          <Button
-            size="icon"
-            onClick={scrollToTop}
-            aria-label="Scroll to top"
-            className="rounded-full shadow-md h-10 w-10"
-          >
-            <ArrowUp className="h-5 w-5" />
-          </Button>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div
+      className="fixed bottom-4 right-4 z-40"
+    >
+      <Button
+        size="icon"
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+        className="rounded-full shadow-md h-10 w-10"
+      >
+        <ArrowUp className="h-5 w-5" />
+      </Button>
+    </div>
   );
 } 

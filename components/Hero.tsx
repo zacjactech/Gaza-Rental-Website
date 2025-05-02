@@ -2,21 +2,24 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MapPin, Search, ArrowRight } from 'lucide-react';
+import { MapPin, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
+import Image from 'next/image';
 
 const Hero = () => {
   const router = useRouter();
   const [location, setLocation] = useState('');
   const [priceRange, setPriceRange] = useState('');
   const [rooms, setRooms] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const { language } = useLanguage();
   const t = translations[language];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSearching(true);
     
     // Build query parameters
     const params = new URLSearchParams();
@@ -30,10 +33,16 @@ const Hero = () => {
 
   return (
     <section className="relative h-[500px] w-full">
-      <div 
-        className="absolute inset-0 bg-cover bg-center" 
-        style={{ backgroundImage: "url('https://images.pexels.com/photos/1546168/pexels-photo-1546168.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')" }}
-      >
+      <div className="absolute inset-0 overflow-hidden">
+        <Image 
+          src="https://images.pexels.com/photos/1546168/pexels-photo-1546168.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+          alt="Hero background"
+          fill
+          priority
+          sizes="100vw"
+          quality={75}
+          className="object-cover"
+        />
         <div className="absolute inset-0 hero-search-gradient" />
       </div>
       
@@ -89,9 +98,13 @@ const Hero = () => {
               </select>
             </div>
             
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white">
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-primary/90 text-white"
+              disabled={isSearching}
+            >
               <Search className="h-4 w-4 mr-2" />
-              {t.hero.search}
+              {isSearching ? t.common.loading : t.hero.search}
             </Button>
           </form>
         </div>

@@ -39,6 +39,7 @@ export default function PropertyCard({ property, featured = false }: PropertyCar
   const { language } = useLanguage();
   const t = translations[language];
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Simple placeholder image as data URL
   const placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23cccccc'/%3E%3Cpath d='M195,102.5v95m-95-95h190' stroke='%23ffffff' stroke-width='10'/%3E%3Ctext x='200' y='180' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23ffffff'%3ENo Image Available%3C/text%3E%3C/svg%3E";
@@ -62,7 +63,7 @@ export default function PropertyCard({ property, featured = false }: PropertyCar
 
   return (
     <div 
-      className={`group bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl ${
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg ${
         featured ? 'ring-2 ring-primary ring-offset-2' : ''
       }`}
     >
@@ -72,10 +73,16 @@ export default function PropertyCard({ property, featured = false }: PropertyCar
           alt={propertyTitle}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`object-cover ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           onError={() => setImageError(true)}
-          priority={featured}
+          onLoad={() => setImageLoaded(true)}
+          loading={featured ? "eager" : "lazy"}
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
         />
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
         <div className="absolute top-0 left-0 right-0 p-2 flex flex-wrap justify-between">
@@ -157,9 +164,9 @@ export default function PropertyCard({ property, featured = false }: PropertyCar
         </div>
 
         {property.amenities && property.amenities.length > 0 && (
-          <div className="mb-4 h-[40px] overflow-hidden relative group-hover:h-auto group-hover:max-h-[80px] group-hover:overflow-y-auto transition-all duration-300">
+          <div className="mb-4 h-[40px] overflow-hidden">
             <div className="flex flex-wrap gap-1">
-              {property.amenities.map((amenity) => (
+              {property.amenities.slice(0, 3).map((amenity) => (
                 <Badge
                   key={amenity}
                   variant="secondary"
@@ -168,10 +175,12 @@ export default function PropertyCard({ property, featured = false }: PropertyCar
                   {t?.property?.amenities?.[amenity as keyof typeof t.property.amenities]}
                 </Badge>
               ))}
+              {property.amenities.length > 3 && (
+                <Badge variant="outline" className="text-xs whitespace-nowrap mb-0.5">
+                  +{property.amenities.length - 3}
+                </Badge>
+              )}
             </div>
-            {property.amenities.length > 3 && (
-              <div className="absolute bottom-0 right-0 left-0 h-4 bg-gradient-to-t from-white dark:from-gray-800 to-transparent pointer-events-none group-hover:opacity-0 transition-opacity duration-300"></div>
-            )}
           </div>
         )}
 
@@ -187,15 +196,13 @@ export default function PropertyCard({ property, featured = false }: PropertyCar
           )}
         </div>
 
-        <Button 
-          asChild
-          className="w-full"
-          aria-label={t?.property?.viewDetails}
+        <Link 
+          href={`/properties/${property.id}`}
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full"
+          prefetch={true}
         >
-          <Link href={`/properties/${property.id}`}>
-            {t?.property?.viewDetails}
-          </Link>
-        </Button>
+          {t?.property?.viewDetails}
+        </Link>
       </div>
     </div>
   );
