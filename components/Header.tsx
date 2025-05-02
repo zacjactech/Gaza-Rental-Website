@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Menu, X, Home, LogIn } from 'lucide-react';
+import { Menu, X, Home, LogIn, Building, Users } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
@@ -32,7 +32,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm transition-all duration-300">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="container">
         <div className="flex justify-between items-center h-14 md:h-16">
           <button 
             onClick={() => navigateTo('/')} 
@@ -55,6 +55,19 @@ const Header = () => {
               className={`${isActive('/browse')} hover:text-primary transition-all duration-200 hover:scale-105 py-1 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
             >
               {t.nav.browse}
+            </button>
+            <button 
+              onClick={() => navigateTo('/about')}
+              className={`${isActive('/about')} hover:text-primary transition-all duration-200 hover:scale-105 py-1 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
+            >
+              {t.footer.quickLinks.about}
+            </button>
+            <button 
+              onClick={() => navigateTo('/dashboard/landlord')}
+              className={`${isActive('/dashboard/landlord')} hover:text-primary transition-all duration-200 hover:scale-105 py-1 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
+            >
+              <Building className="h-3.5 w-3.5 inline mr-1" />
+              {t.footer.quickLinks.landlords}
             </button>
           </nav>
 
@@ -120,6 +133,19 @@ const Header = () => {
               className={`${isActive('/browse')} hover:text-primary transition-colors text-sm text-left py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
             >
               {t.nav.browse}
+            </button>
+            <button 
+              onClick={() => navigateTo('/about')}
+              className={`${isActive('/about')} hover:text-primary transition-colors text-sm text-left py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
+            >
+              {t.footer.quickLinks.about}
+            </button>
+            <button 
+              onClick={() => navigateTo('/dashboard/landlord')}
+              className={`${isActive('/dashboard/landlord')} hover:text-primary transition-colors text-sm text-left py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
+            >
+              <Building className="h-3.5 w-3.5 inline mr-1" />
+              {t.footer.quickLinks.landlords}
             </button>
             <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden w-fit mt-2">
               <Button 

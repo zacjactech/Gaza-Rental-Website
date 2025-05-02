@@ -109,6 +109,52 @@ export default function MapViewPage() {
   // Add ref for the map container
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
+  // Add additional filter options
+  const [activeFilters, setActiveFilters] = useState(0);
+  const [showSearchPanel, setShowSearchPanel] = useState(true);
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
+  const [sortBy, setSortBy] = useState("newest");
+
+  // Price range formatting
+  const formatPriceLabel = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `${(value / 1000).toFixed(0)}K`;
+    }
+    return value.toString();
+  };
+
+  // Helper to count active filters
+  useEffect(() => {
+    let count = 0;
+    if (filters.location) count++;
+    if (filters.propertyType) count++;
+    if (filters.bedrooms) count++;
+    if (filters.bathrooms) count++;
+    if (filters.amenities.length > 0) count += filters.amenities.length;
+    setActiveFilters(count);
+  }, [filters]);
+
+  // Reset all filters
+  const resetFilters = () => {
+    setFilters({
+      location: '',
+      propertyType: '',
+      priceRange: '',
+      bedrooms: '',
+      bathrooms: '',
+      amenities: [],
+    });
+    setPriceRange([0, 1000000]);
+    setSortBy("newest");
+  };
+
+  // Toggle search panel visibility on mobile
+  const toggleSearchPanel = () => {
+    setShowSearchPanel(!showSearchPanel);
+  };
+
   // Mock properties data with coordinates
   const properties = useMemo(() => [
     {
@@ -204,111 +250,53 @@ export default function MapViewPage() {
     <div className="flex flex-col min-h-screen">
       {/* Main content */}
       <div className="flex flex-col md:flex-row flex-1 relative">
-        {/* Mobile filter button */}
-        <div className="md:hidden p-4 border-b">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" className="w-full justify-between">
-                <div className="flex items-center">
-                  <Filter className="h-4 w-4 mr-2" />
-                  {t?.browse?.search?.filters?.title}
-                </div>
+        {/* Search panel toggle button for mobile */}
+        <div className="md:hidden fixed bottom-4 right-4 z-20">
+          <Button 
+            onClick={toggleSearchPanel} 
+            className="rounded-full w-12 h-12 shadow-lg flex items-center justify-center"
+          >
+            {showSearchPanel ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle>{t?.browse?.search?.filters?.title}</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6 space-y-6">
-                <div className="space-y-2">
-                  <Label>{t?.browse?.search?.location}</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                    <Input
-                      placeholder={t?.browse?.search?.location}
-                      value={filters.location}
-                      onChange={(e) => handleFilterChange('location', e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>{t?.browse?.search?.propertyType}</Label>
-                  <select
-                    value={filters.propertyType}
-                    onChange={(e) => handleFilterChange('propertyType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  >
-                    <option value="">{t?.browse?.search?.propertyTypes?.all}</option>
-                    {Object.entries(t?.browse?.search?.propertyTypes || {}).map(([key, value]) => (
-                      key !== 'all' && (
-                        <option key={key} value={key}>
-                          {value}
-                        </option>
-                      )
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t?.browse?.search?.priceRange}</Label>
-                  <select
-                    value={filters.priceRange}
-                    onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  >
-                    <option value="">{t?.browse?.search?.priceRanges?.all}</option>
-                    {Object.entries(t?.browse?.search?.priceRanges || {}).map(([key, value]) => (
-                      key !== 'all' && (
-                        <option key={key} value={key}>
-                          {value}
-                        </option>
-                      )
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t?.browse?.search?.filters?.amenities}</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {amenityOptions.map((amenity) => (
+        {/* Search and filter panel */}
+        <div className={`
+          w-full md:w-[320px] lg:w-[350px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 
+          ${showSearchPanel ? 'absolute inset-0 z-10 md:relative' : 'hidden md:block'}
+        `}>
+          <div className="p-4 border-b border-gray-200 dark:border-gray-800 sticky top-0 bg-white dark:bg-gray-900 z-10 flex justify-between items-center">
+            <h2 className="text-base font-semibold">{t?.browse?.search?.title || 'Search Properties'}</h2>
+            <div className="flex gap-2">
+              {activeFilters > 0 && (
                       <Button
-                        key={amenity.id}
-                        variant={filters.amenities.includes(amenity.id) ? "default" : "outline"}
+                  variant="outline" 
                         size="sm"
-                        onClick={() => handleAmenityToggle(amenity.id)}
-                        className="flex items-center gap-1.5"
-                      >
-                        <span>{amenity.icon}</span>
-                        {t?.property?.amenities?.[amenity.id as keyof typeof t.property.amenities]}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <Button className="w-full">
-                  <Search className="h-4 w-4 mr-2" />
-                  {t?.browse?.search?.searchButton}
+                  onClick={resetFilters}
+                  className="text-xs h-8"
+                >
+                  Clear ({activeFilters})
+                </Button>
+              )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowSearchPanel(false)} 
+                className="md:hidden h-8 w-8"
+              >
+                <X className="h-4 w-4" />
                 </Button>
               </div>
-            </SheetContent>
-          </Sheet>
         </div>
 
-        {/* Desktop sidebar */}
-        <div className="hidden md:block w-80 h-full overflow-y-auto border-r bg-white dark:bg-gray-800 p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            {t?.browse?.search?.filters?.title}
-          </h2>
-          
-          <div className="space-y-6">
+          <div className="p-4 md:p-5 space-y-5 overflow-y-auto max-h-[calc(100vh-8rem)] scrollbar-thin">
+            {/* Location search */}
             <div className="space-y-2">
-              <Label>{t?.browse?.search?.location}</Label>
+              <Label>{t?.browse?.search?.location || 'Location'}</Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <Input
-                  placeholder={t?.browse?.search?.location}
+                  placeholder={t?.browse?.search?.locationPlaceholder || 'Enter area or city...'}
                   value={filters.location}
                   onChange={(e) => handleFilterChange('location', e.target.value)}
                   className="pl-10"
@@ -316,68 +304,155 @@ export default function MapViewPage() {
               </div>
             </div>
 
+            {/* Price Range */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <Label>{t?.browse?.search?.priceRange || 'Price Range (TZS)'}</Label>
+                <div className="flex gap-2 text-sm">
+                  <span>{formatPriceLabel(priceRange[0])}</span>
+                  <span>-</span>
+                  <span>{formatPriceLabel(priceRange[1])}</span>
+                </div>
+              </div>
+              <div className="px-1 py-6">
+                {/* Your Slider component - here's a simplified representation */}
+                <div className="relative h-4">
+                  <div className="absolute inset-0 top-1/2 h-1 -translate-y-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div 
+                    className="absolute top-1/2 h-1 -translate-y-1/2 bg-primary rounded"
+                    style={{ 
+                      left: `${(priceRange[0] / 1000000) * 100}%`, 
+                      right: `${100 - (priceRange[1] / 1000000) * 100}%` 
+                    }}
+                  ></div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1000000}
+                    step={50000}
+                    value={priceRange[0]}
+                    onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                    className="absolute w-full opacity-0 cursor-pointer"
+                  />
+                  <input
+                    type="range"
+                    min={0}
+                    max={1000000}
+                    step={50000}
+                    value={priceRange[1]}
+                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                    className="absolute w-full opacity-0 cursor-pointer"
+                  />
+                  <div 
+                    className="absolute top-1/2 -translate-y-1/2 h-4 w-4 bg-primary rounded-full shadow"
+                    style={{ left: `${(priceRange[0] / 1000000) * 100}%` }}
+                  ></div>
+                  <div 
+                    className="absolute top-1/2 -translate-y-1/2 h-4 w-4 bg-primary rounded-full shadow"
+                    style={{ left: `${(priceRange[1] / 1000000) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Type */}
             <div className="space-y-2">
-              <Label>{t?.browse?.search?.propertyType}</Label>
+              <Label>{t?.browse?.search?.propertyType || 'Property Type'}</Label>
               <select
                 value={filters.propertyType}
                 onChange={(e) => handleFilterChange('propertyType', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
-                <option value="">{t?.browse?.search?.propertyTypes?.all}</option>
-                {Object.entries(t?.browse?.search?.propertyTypes || {}).map(([key, value]) => (
-                  key !== 'all' && (
-                    <option key={key} value={key}>
-                      {value}
-                    </option>
-                  )
-                ))}
+                <option value="">{t?.browse?.search?.propertyTypes?.all || 'All Types'}</option>
+                <option value="apartment">Apartment</option>
+                <option value="house">House</option>
+                <option value="villa">Villa</option>
+                <option value="studio">Studio</option>
               </select>
             </div>
 
+            {/* Bedrooms */}
             <div className="space-y-2">
-              <Label>{t?.browse?.search?.priceRange}</Label>
-              <select
-                value={filters.priceRange}
-                onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                <option value="">{t?.browse?.search?.priceRanges?.all}</option>
-                {Object.entries(t?.browse?.search?.priceRanges || {}).map(([key, value]) => (
-                  key !== 'all' && (
-                    <option key={key} value={key}>
-                      {value}
-                    </option>
-                  )
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t?.browse?.search?.filters?.amenities}</Label>
-              <div className="flex flex-wrap gap-2">
-                {amenityOptions.map((amenity) => (
+              <Label>{t?.browse?.search?.bedrooms || 'Bedrooms'}</Label>
+              <div className="grid grid-cols-6 gap-2">
+                {['Any', '1', '2', '3', '4', '5+'].map((num) => (
                   <Button
-                    key={amenity.id}
-                    variant={filters.amenities.includes(amenity.id) ? "default" : "outline"}
+                    key={num}
+                    variant={filters.bedrooms === (num === 'Any' ? '' : num.replace('+', '')) ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleAmenityToggle(amenity.id)}
-                    className="flex items-center gap-1.5"
+                    onClick={() => handleFilterChange('bedrooms', num === 'Any' ? '' : num.replace('+', ''))}
+                    className="h-9"
                   >
-                    <span>{amenity.icon}</span>
-                    {t?.property?.amenities?.[amenity.id as keyof typeof t.property.amenities]}
+                    {num}
                   </Button>
                 ))}
               </div>
             </div>
 
+            {/* Bathrooms */}
+            <div className="space-y-2">
+              <Label>{t?.browse?.search?.bathrooms || 'Bathrooms'}</Label>
+              <div className="grid grid-cols-5 gap-2">
+                {['Any', '1', '2', '3', '4+'].map((num) => (
+                  <Button
+                    key={num}
+                    variant={filters.bathrooms === (num === 'Any' ? '' : num.replace('+', '')) ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleFilterChange('bathrooms', num === 'Any' ? '' : num.replace('+', ''))}
+                    className="h-9"
+                  >
+                    {num}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Amenities */}
+            <div className="space-y-3">
+              <Label>{t?.browse?.search?.amenities || 'Amenities'}</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {amenityOptions.map((amenity) => (
+                  <Button
+                    key={amenity.id}
+                    variant={filters.amenities.includes(amenity.id) ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleAmenityToggle(amenity.id)}
+                    className="justify-start h-9"
+                  >
+                    <span className="mr-2">{amenity.icon}</span>
+                    <span>{amenity.id.charAt(0).toUpperCase() + amenity.id.slice(1)}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sort options */}
+            <div className="space-y-2">
+              <Label>{t?.browse?.search?.sortBy || 'Sort By'}</Label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              >
+                <option value="newest">Newest</option>
+                <option value="priceAsc">Price (Low to High)</option>
+                <option value="priceDesc">Price (High to Low)</option>
+              </select>
+            </div>
+
+            {/* Apply filters button */}
+            <div className="pt-4">
             <Button className="w-full">
-              <Search className="h-4 w-4 mr-2" />
-              {t?.browse?.search?.searchButton}
+                <Search className="mr-2 h-4 w-4" />
+                {t?.browse?.search?.applyFilters || 'Search Properties'}
             </Button>
+            </div>
           </div>
         </div>
 
-        {/* Map section */}
+        {/* Map and results panel */}
+        <div className="flex-1 flex flex-col min-h-[80vh] md:min-h-0">
+          {/* Map container */}
         <div className="flex-1 relative h-[calc(100vh-64px)]" style={{ overflow: 'hidden' }}>
           <ErrorBoundary>
             {/* Debug status display */}
@@ -387,9 +462,9 @@ export default function MapViewPage() {
             
             <div 
               ref={mapContainerRef}
-              className="h-full w-full" 
+                className="h-full w-full absolute inset-0" 
               style={{ 
-                minHeight: "500px", 
+                  minHeight: "600px", 
                 height: "100%", 
                 position: "relative",
                 zIndex: 1
@@ -418,6 +493,7 @@ export default function MapViewPage() {
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
       

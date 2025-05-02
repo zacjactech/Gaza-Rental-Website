@@ -38,54 +38,55 @@ export default function AboutPage() {
   return (
     <main className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/80 to-primary py-20">
+      <section className="relative bg-gradient-to-br from-primary/80 to-primary py-16 md:py-20">
         <div className="absolute inset-0 bg-[url('/images/gaza-background.jpg')] bg-cover opacity-10"></div>
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="container relative z-10 text-center">
+          <h1 className="font-bold text-white mb-4">
             {t?.about?.hero?.title || 'About GazaRenter'}
           </h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
+          <p className="text-white/90 max-w-2xl mx-auto">
             {t?.about?.hero?.subtitle || 'The premier platform connecting landlords and tenants across Tanzania with verified listings and secure transactions.'}
           </p>
         </div>
       </section>
 
       {/* Mission Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            <div className="w-full lg:w-1/2">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+      <section className="py-12 md:py-16">
+        <div className="container">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            <div className="w-full lg:w-1/2 order-2 lg:order-1">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
                 {t?.about?.mission?.title || 'Our Mission'}
               </h2>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
+              <p className="text-gray-700 dark:text-gray-300 mb-6 text-lg">
                 {t?.about?.mission?.description || 'GazaRenter was founded with a simple mission: to make finding and renting homes in Tanzania easier, safer, and more transparent. We believe that everyone deserves a place to call home, and our platform is designed to connect landlords with tenants in the most efficient way possible.'}
               </p>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
+              <p className="text-gray-700 dark:text-gray-300 mb-8 text-lg">
                 {t?.about?.mission?.description2 || 'We verify all listings and landlords to ensure that what you see is what you get. Our secure payment system protects both parties, and our 24/7 support team is always ready to help.'}
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button asChild>
+                <Button asChild size="lg">
                   <Link href="/browse">
                     {t?.about?.mission?.browseCta || 'Browse Properties'}
                   </Link>
                 </Button>
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild size="lg">
                   <Link href="/contact">
                     {t?.about?.mission?.contactCta || 'Contact Us'}
                   </Link>
                 </Button>
               </div>
             </div>
-            <div className="w-full lg:w-1/2">
-              <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-2xl">
-                <Image 
-                  src="/images/about-mission.jpg" 
+            <div className="w-full lg:w-1/2 order-1 lg:order-2">
+              <div className="relative h-[400px] rounded-lg overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/about-mission.jpg"
                   alt="Our Mission"
                   fill
                   style={{ objectFit: 'cover' }}
                   className="rounded-lg"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               </div>
             </div>
           </div>
@@ -93,8 +94,8 @@ export default function AboutPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
-        <div className="container mx-auto px-4">
+      <section className="py-12 md:py-16 bg-gray-50 dark:bg-gray-800">
+        <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               {t?.about?.stats?.title || 'GazaRenter by the Numbers'}
@@ -127,8 +128,8 @@ export default function AboutPage() {
       {/* Team Section (you can add this if you have team information) */}
 
       {/* Values Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
+      <section className="py-12 md:py-16">
+        <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               {t?.about?.values?.title || 'Our Values'}
@@ -170,8 +171,8 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-12 md:py-16 bg-primary">
+        <div className="container text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             {t?.about?.cta?.title || 'Ready to Find Your Perfect Home?'}
           </h2>

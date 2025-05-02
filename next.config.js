@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['images.pexels.com'],
+    domains: ['images.pexels.com', 'images.unsplash.com'],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 64, 96, 128, 256],
@@ -27,9 +27,7 @@ const nextConfig = {
     },
     optimisticClientCache: true,
     scrollRestoration: true,
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
+    serverActions: true,
   },
   swcMinify: true,
   compress: true,
