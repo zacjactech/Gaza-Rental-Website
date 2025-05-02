@@ -2,27 +2,39 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
-import { Shield, CreditCard, Headphones } from 'lucide-react';
+import { Shield, CreditCard, Headphones, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+
+interface Feature {
+  icon: JSX.Element;
+  titleKey: string;
+  descriptionKey: string;
+  link?: string;
+}
 
 const Features = () => {
   const { language } = useLanguage();
   const t = translations[language];
 
-  const features = [
+  const features: Feature[] = [
     {
       icon: <Shield className="h-8 w-8 text-primary" />,
-      title: t.features.verified.title,
-      description: t.features.verified.description
+      titleKey: 'verified',
+      descriptionKey: 'verified',
+      link: '/about#verification'
     },
     {
       icon: <CreditCard className="h-8 w-8 text-primary" />,
-      title: t.features.secure.title,
-      description: t.features.secure.description
+      titleKey: 'secure',
+      descriptionKey: 'secure',
+      link: '/about#security'
     },
     {
       icon: <Headphones className="h-8 w-8 text-primary" />,
-      title: t.features.support.title,
-      description: t.features.support.description
+      titleKey: 'support',
+      descriptionKey: 'support',
+      link: '/contact'
     }
   ];
 
@@ -41,20 +53,38 @@ const Features = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <div 
-              key={index}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+              key={feature.titleKey}
+              className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <div className="mb-4">
+              <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {feature.title}
+                {t.features[feature.titleKey].title}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                {feature.description}
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                {t.features[feature.descriptionKey].description}
               </p>
+              {feature.link && (
+                <Link 
+                  href={feature.link}
+                  className="inline-flex items-center text-primary hover:text-primary/80 transition-colors duration-300"
+                >
+                  <span className="mr-1">{t.features.learnMore}</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              )}
             </div>
           ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <Button asChild size="lg">
+            <Link href="/about" className="inline-flex items-center">
+              {t.features.exploreMore}
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

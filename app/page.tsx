@@ -11,6 +11,8 @@ import Footer from '@/components/Footer';
 import Features from '@/components/Features';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 export default function Home() {
   const { language } = useLanguage();
@@ -19,86 +21,103 @@ export default function Home() {
   const featuredProperties = [
     {
       id: 1,
-      title: 'Cozy 2BR Apartment in Mikocheni',
+      titleKey: 'modern_apartment',
       price: 250000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 2,
       bathrooms: 1,
-      location: 'Mikocheni, Dar es Salaam',
-      distance: '5 km to center',
-      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      locationKey: 'mikocheni',
+      distance: '5 km',
+      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'apartment',
+      available: true,
+      isVerified: true,
+      amenities: ['parking', 'security', 'internet'],
+      size: 85
     },
     {
       id: 2,
-      title: 'Cozy 2BR Apartment in Mikocheni',
-      price: 250000,
+      titleKey: 'luxury_villa',
+      price: 450000,
       currency: 'TZS',
-      period: 'month',
-      bedrooms: 2,
-      bathrooms: 1,
-      location: 'Mikocheni, Dar es Salaam',
-      distance: '5 km to center',
-      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      periodKey: 'monthly',
+      bedrooms: 3,
+      bathrooms: 2,
+      locationKey: 'masaki',
+      distance: '3 km',
+      image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'villa',
+      available: true,
+      isNew: true,
+      amenities: ['parking', 'pool', 'security', 'garden'],
+      size: 200
     },
     {
       id: 3,
-      title: 'Cozy 2BR Apartment in Mikocheni',
-      price: 250000,
+      titleKey: 'studio_apartment',
+      price: 150000,
       currency: 'TZS',
-      period: 'month',
-      bedrooms: 2,
+      periodKey: 'monthly',
+      bedrooms: 1,
       bathrooms: 1,
-      location: 'Mikocheni, Dar es Salaam',
-      distance: '5 km to center',
-      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      locationKey: 'city_center',
+      distance: '1 km',
+      image: 'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'studio',
+      available: true,
+      isVerified: true,
+      amenities: ['furnished', 'internet', 'security'],
+      size: 45
     },
     {
       id: 4,
-      title: 'Cozy 2BR Apartment in Mikocheni',
-      price: 250000,
+      titleKey: 'modern_2br_apartment',
+      price: 280000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 2,
       bathrooms: 1,
-      location: 'Mikocheni, Dar es Salaam',
-      distance: '5 km to center',
-      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      locationKey: 'kinondoni',
+      distance: '6 km',
+      image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'apartment',
+      available: true,
+      amenities: ['parking', 'security', 'aircon'],
+      size: 90
     }
   ];
 
   const testimonials = [
     {
       id: 1,
-      name: 'Mary N.',
-      role: 'Tenant',
+      nameKey: 'john_doe',
+      roleKey: 'john_doe',
       rating: 5,
-      comment: 'Found my perfect apartment in just 3 days. The booking process was so easy!',
-      image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      commentKey: 'john_doe',
+      image: '/testimonials/john-doe.jpg',
+      location: 'Dar es Salaam',
+      date: '2024-02-15'
     },
     {
       id: 2,
-      name: 'Mary N.',
-      role: 'Tenant',
+      nameKey: 'mary_smith',
+      roleKey: 'mary_smith',
       rating: 5,
-      comment: 'Amazing platform for finding good houses in Dar es Salaam. Highly recommended!',
-      image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      commentKey: 'mary_smith',
+      image: '/testimonials/mary-smith.jpg',
+      location: 'Arusha',
+      date: '2024-02-10'
     },
     {
       id: 3,
-      name: 'Mary N.',
-      role: 'Tenant',
+      nameKey: 'james_wilson',
+      roleKey: 'james_wilson',
       rating: 5,
-      comment: 'The map feature helped me find a place close to my workplace. Very convenient!',
-      image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-    },
-    {
-      id: 4,
-      name: 'Mary N.',
-      role: 'Tenant',
-      rating: 5,
-      comment: 'Payment was secure and the landlord was verified. Great experience overall!',
-      image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      commentKey: 'james_wilson',
+      image: '/testimonials/james-wilson.jpg',
+      location: 'Mwanza',
+      date: '2024-02-05'
     }
   ];
 
@@ -107,40 +126,62 @@ export default function Home() {
       <Hero />
       <Features />
       
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-semibold mb-2 text-center text-gray-800">{t.featured.title}</h2>
-          <p className="text-center text-gray-600 mb-10">{t.featured.subtitle}</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              {t?.featured?.title}
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
+              {t?.featured?.subtitle}
+            </p>
+            <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
+          </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProperties.map(property => (
-              <PropertyCard key={property.id} property={property} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {featuredProperties.map((property, index) => (
+              <PropertyCard 
+                key={property.id} 
+                property={property}
+                featured={index === 0}
+              />
             ))}
+          </div>
+
+          <div className="text-center">
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="font-medium"
+            >
+              <Link href="/browse" className="inline-flex items-center gap-2">
+                {t?.browse?.title}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
 
       <MapCTA />
       
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-semibold mb-10 text-center text-gray-800">{t.trust.title}</h2>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              {t?.trust?.title}
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
+              {t?.trust?.subtitle || 'We pride ourselves on maintaining the highest standards in the rental industry'}
+            </p>
+            <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
+          </div>
           <TrustFactors />
         </div>
       </section>
 
-      <section className="py-16 bg-amber-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-semibold mb-2 text-center text-gray-800">{t.testimonials.title}</h2>
-          <p className="text-center text-gray-600 mb-10">{t.testimonials.subtitle}</p>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map(testimonial => (
-              <Testimonials key={testimonial.id} testimonial={testimonial} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <Testimonials testimonials={testimonials} />
 
       <Footer />
     </main>

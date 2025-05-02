@@ -1,270 +1,480 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
-import { Filter, MapPin, Search } from 'lucide-react';
+import { Filter, MapPin, Search, SlidersHorizontal, X, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Slider } from '@/components/ui/slider';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/translations';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function BrowsePage() {
+  const searchParams = useSearchParams();
+  const { language } = useLanguage();
+  const t = translations[language];
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState('newest');
+  const [filters, setFilters] = useState({
+    location: searchParams.get('location') || '',
+    bedrooms: searchParams.get('bedrooms') || 'any',
+    bathrooms: searchParams.get('bathrooms') || 'any',
+    propertyType: searchParams.get('type') || 'all',
+    priceRange: searchParams.get('price') || '',
+    amenities: [] as string[],
+    minPrice: 0,
+    maxPrice: 1000000
+  });
+
+  const handleFilterChange = (field: string, value: string | number | number[]) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAmenityToggle = (amenityId: string) => {
+    setFilters(prev => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenityId)
+        ? prev.amenities.filter(id => id !== amenityId)
+        : [...prev.amenities, amenityId]
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      location: '',
+      bedrooms: 'any',
+      bathrooms: 'any',
+      propertyType: 'all',
+      priceRange: '',
+      amenities: [],
+      minPrice: 0,
+      maxPrice: 1000000
+    });
+    setSortBy('newest');
+  };
+
   // Mock properties data
   const properties = [
     {
       id: 1,
-    title: 'Cozy 2 Bedroom Apartment in Mikocheni',
+      titleKey: 'modern_apartment',
       price: 250000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 2,
       bathrooms: 1,
-    area: 85,
-    areaUnit: 'sqm',
-      location: 'Mikocheni, Dar es Salaam',
-      distance: '5 km to center',
-      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      locationKey: 'mikocheni',
+      distance: '5 km',
+      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'apartment',
+      available: true,
+      isVerified: true,
+      amenities: ['parking', 'security', 'internet'],
+      size: 85,
+      createdAt: '2024-02-20'
     },
     {
       id: 2,
-    title: 'Modern 3 Bedroom House in Oyster Bay',
-    price: 450000,
+      titleKey: 'luxury_villa',
+      price: 450000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 3,
       bathrooms: 2,
-      location: 'Masaki, Dar es Salaam',
+      locationKey: 'masaki',
       distance: '3 km to center',
-      image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'villa',
+      available: true
     },
     {
       id: 3,
-    title: 'Luxury 4 Bedroom Villa in Masaki',
-    price: 850000,
+      titleKey: 'luxury_4_bedroom_villa',
+      price: 850000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 1,
       bathrooms: 1,
-      location: 'Mbezi, Dar es Salaam',
+      locationKey: 'mbezi',
       distance: '10 km to center',
-      image: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      image: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'villa',
+      available: true
     },
     {
       id: 4,
-      title: 'Family 4BR House in Oyster Bay',
+      titleKey: 'family_4br_house',
       price: 750000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 4,
       bathrooms: 3,
-      location: 'Oyster Bay, Dar es Salaam',
+      locationKey: 'oyster_bay',
       distance: '4 km to center',
-      image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'house',
+      available: true
     },
     {
       id: 5,
-      title: 'Studio Apartment in City Center',
+      titleKey: 'studio_apartment',
       price: 150000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 1,
       bathrooms: 1,
-    area: 45,
-    areaUnit: 'sqm',
-      location: 'City Center, Dar es Salaam',
+      locationKey: 'city_center',
       distance: '1 km to center',
-      image: 'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      image: 'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'studio',
+      available: true
     },
     {
       id: 6,
-      title: 'Modern 2BR Apartment in Kinondoni',
+      titleKey: 'modern_2br_apartment',
       price: 280000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 2,
       bathrooms: 1,
-      location: 'Kinondoni, Dar es Salaam',
+      locationKey: 'kinondoni',
       distance: '6 km to center',
-      image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'apartment',
+      available: true
     },
     {
       id: 7,
-      title: 'Luxury 3BR Apartment in Upanga',
+      titleKey: 'luxury_3br_apartment',
       price: 600000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 3,
       bathrooms: 2,
-      location: 'Upanga, Dar es Salaam',
+      locationKey: 'upanga',
       distance: '2 km to center',
-      image: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      image: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'apartment',
+      available: true
     },
     {
       id: 8,
-      title: '1BR Apartment near University',
+      titleKey: '1br_apartment',
       price: 200000,
       currency: 'TZS',
-      period: 'month',
+      periodKey: 'monthly',
       bedrooms: 1,
       bathrooms: 1,
-      location: 'Ubungo, Dar es Salaam',
+      locationKey: 'ubungo',
       distance: '8 km to center',
-      image: 'https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      image: 'https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      type: 'apartment',
+      available: true
     }
   ];
 
+  // Sort properties
+  const sortedProperties = [...properties].sort((a, b) => {
+    switch (sortBy) {
+      case 'priceAsc':
+        return a.price - b.price;
+      case 'priceDesc':
+        return b.price - a.price;
+      case 'newest':
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      default:
+        return 0;
+    }
+  });
+
+  // Filter properties
+  const filteredProperties = sortedProperties.filter(property => {
+    if (filters.location && !t?.property?.items?.[property.locationKey]?.toLowerCase().includes(filters.location.toLowerCase())) {
+      return false;
+    }
+    if (filters.propertyType && filters.propertyType !== 'all' && property.type !== filters.propertyType) {
+      return false;
+    }
+    if (filters.bedrooms && filters.bedrooms !== 'any') {
+      const numBedrooms = parseInt(filters.bedrooms);
+      if (filters.bedrooms === '4+') {
+        if (property.bedrooms < 4) return false;
+      } else if (property.bedrooms < numBedrooms) {
+        return false;
+      }
+    }
+    if (filters.bathrooms && filters.bathrooms !== 'any') {
+      const numBathrooms = parseInt(filters.bathrooms);
+      if (filters.bathrooms === '3+') {
+        if (property.bathrooms < 3) return false;
+      } else if (property.bathrooms < numBathrooms) {
+        return false;
+      }
+    }
+    if (property.price < filters.minPrice || property.price > filters.maxPrice) {
+      return false;
+    }
+    if (filters.amenities.length > 0 && !filters.amenities.every(amenity => property.amenities?.includes(amenity))) {
+      return false;
+    }
+    return true;
+  });
+
+  const amenityOptions = [
+    { id: 'parking', icon: '🅿️' },
+    { id: 'security', icon: '🔒' },
+    { id: 'pool', icon: '🏊‍♂️' },
+    { id: 'gym', icon: '💪' },
+    { id: 'internet', icon: '📶' },
+    { id: 'furnished', icon: '🛋️' },
+    { id: 'aircon', icon: '❄️' },
+    { id: 'garden', icon: '🌳' }
+  ];
+
   return (
-    <main className="flex min-h-screen flex-col">
-      <div className="bg-primary/10 py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            Browse Properties
-          </h1>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {t?.browse?.title}
+              </h1>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {filteredProperties.length} {t?.browse?.results?.properties}
+                </p>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                      <ArrowUpDown className="h-4 w-4" />
+                      {t?.browse?.results?.sortOptions?.[sortBy as keyof typeof t.browse.results.sortOptions]}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {Object.entries(t?.browse?.results?.sortOptions || {}).map(([key, value]) => (
+                      <DropdownMenuItem
+                        key={key}
+                        onClick={() => setSortBy(key)}
+                      >
+                        {value}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div className="relative col-span-1 md:col-span-2">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MapPin className="h-5 w-5 text-gray-400" />
                 </div>
-                <input
+                <Input
                   type="text"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  placeholder="Location, neighborhood, or address"
+                  className="pl-10"
+                  placeholder={t?.browse?.search?.location}
+                  value={filters.location}
+                  onChange={(e) => handleFilterChange('location', e.target.value)}
                 />
               </div>
               
+              <Select
+                value={filters.propertyType}
+                onValueChange={(value) => handleFilterChange('propertyType', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t?.browse?.search?.propertyTypes?.all} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t?.browse?.search?.propertyTypes?.all}</SelectItem>
+                  {Object.entries(t?.browse?.search?.propertyTypes || {}).map(([key, value]) => (
+                    key !== 'all' && (
+                      <SelectItem key={key} value={key}>
+                        {value}
+                      </SelectItem>
+                    )
+                  ))}
+                </SelectContent>
+              </Select>
+              
               <div className="col-span-1">
-                <select className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  <option value="">Property Type</option>
-                  <option value="apartment">Apartment</option>
-                  <option value="house">House</option>
-                  <option value="villa">Villa</option>
-                  <option value="studio">Studio</option>
-                </select>
+                <Button 
+                  variant="outline" 
+                  size="default" 
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  {showFilters ? <X className="h-4 w-4" /> : <SlidersHorizontal className="h-4 w-4" />}
+                  {showFilters ? t?.browse?.search?.hideFilters : t?.browse?.search?.moreFilters}
+                </Button>
               </div>
               
               <div className="col-span-1">
-                <select className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  <option value="">Price Range</option>
-                  <option value="0-200000">Under 200,000 TZS</option>
-                  <option value="200000-300000">200,000 - 300,000 TZS</option>
-                  <option value="300000-500000">300,000 - 500,000 TZS</option>
-                  <option value="500000+">Above 500,000 TZS</option>
-                </select>
-              </div>
-              
-              <div className="col-span-1">
-                <Button className="w-full flex items-center justify-center gap-2">
+                <Button 
+                  className="w-full flex items-center justify-center gap-2"
+                  size="default"
+                >
                   <Search className="h-4 w-4" />
-                  Search
+                  {t?.browse?.search?.searchButton}
                 </Button>
               </div>
             </div>
-            
-            <div className="mt-4 flex items-center">
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <Filter className="h-4 w-4" />
-                More Filters
-              </Button>
-            </div>
 
             {showFilters && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-md">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Bedrooms
-                  </label>
-                  <select
-                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    value={filters.bedrooms}
-                    onChange={(e) => handleFilterChange('bedrooms', e.target.value)}
-                  >
-                    <option value="">Any</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4+</option>
-                  </select>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 mt-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium">
+                      {t?.browse?.search?.filters?.bedrooms}
+                    </Label>
+                    <Select
+                      value={filters.bedrooms}
+                      onValueChange={(value) => handleFilterChange('bedrooms', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any</SelectItem>
+                        {[1, 2, 3, 4, '4+'].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">
+                      {t?.browse?.search?.filters?.bathrooms}
+                    </Label>
+                    <Select
+                      value={filters.bathrooms}
+                      onValueChange={(value) => handleFilterChange('bathrooms', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any</SelectItem>
+                        {[1, 2, '3+'].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <Label className="text-sm font-medium">
+                    Price Range (TZS)
+                  </Label>
+                  <div className="pt-2">
+                    <Slider
+                      defaultValue={[filters.minPrice, filters.maxPrice]}
+                      max={1000000}
+                      step={10000}
+                      onValueChange={(value) => {
+                        handleFilterChange('minPrice', value[0]);
+                        handleFilterChange('maxPrice', value[1]);
+                      }}
+                    />
+                    <div className="flex justify-between mt-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {filters.minPrice.toLocaleString()} TZS
+                      </span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {filters.maxPrice.toLocaleString()} TZS
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Bathrooms
-                  </label>
-                  <select
-                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    value={filters.bathrooms}
-                    onChange={(e) => handleFilterChange('bathrooms', e.target.value)}
-                  >
-                    <option value="">Any</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3+</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Amenities
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { id: 'parking', label: 'Parking' },
-                      { id: 'pool', label: 'Swimming Pool' },
-                      { id: 'gym', label: 'Gym' },
-                      { id: 'security', label: 'Security' }
-                    ].map((amenity) => (
+                  <Label className="text-sm font-medium">
+                    {t?.browse?.search?.filters?.amenities}
+                  </Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {amenityOptions.map((amenity) => (
                       <Button
                         key={amenity.id}
                         variant={filters.amenities.includes(amenity.id) ? "default" : "outline"}
                         size="sm"
                         onClick={() => handleAmenityToggle(amenity.id)}
+                        className="flex items-center gap-1.5"
                       >
-                        {amenity.label}
+                        <span>{amenity.icon}</span>
+                        {t?.property?.amenities?.[amenity.id as keyof typeof t.property.amenities]}
                       </Button>
                     ))}
                   </div>
                 </div>
               </div>
             )}
+
+            {(filters.location !== '' || 
+              filters.bedrooms !== 'any' || 
+              filters.bathrooms !== 'any' || 
+              filters.propertyType !== 'all' || 
+              filters.amenities.length > 0 || 
+              filters.minPrice > 0 || 
+              filters.maxPrice < 1000000 || 
+              sortBy !== 'newest') && (
+              <div className="flex justify-end">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-gray-600 dark:text-gray-400"
+                >
+                  {t?.browse?.search?.filters?.clear}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
-                </Link>
-              ))}
       </div>
-      
+
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
-            Showing <span className="font-semibold text-gray-900 dark:text-white">{properties.length}</span> properties
-          </p>
-          
-          <div className="flex items-center">
-            <span className="text-gray-600 dark:text-gray-400 mr-2">Sort by:</span>
-            <select className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-              <option value="newest">Newest</option>
-              <option value="price-asc">Price (Low to High)</option>
-              <option value="price-desc">Price (High to Low)</option>
-            </select>
+        {filteredProperties.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProperties.map((property) => (
+              <PropertyCard 
+                key={property.id} 
+                property={property}
+              />
+            ))}
           </div>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {properties.map(property => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
-        
-        <div className="mt-10 flex justify-center">
-          <nav className="flex items-center gap-1">
-            <Button variant="outline" size="icon" disabled>
-              &lt;
-            </Button>
-            <Button variant="default" size="icon">1</Button>
-            <Button variant="outline" size="icon">2</Button>
-            <Button variant="outline" size="icon">3</Button>
-            <Button variant="outline" size="icon">
-              &gt;
-            </Button>
-          </nav>
-        </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
+              {t?.browse?.search?.noResults}
+            </p>
+          </div>
         )}
       </div>
+
+      <Footer />
+    </main>
   );
 }

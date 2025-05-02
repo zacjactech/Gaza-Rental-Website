@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Map } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
+import { Button } from '@/components/ui/button';
 
 const MapCTA = () => {
   const { language } = useLanguage();
@@ -21,13 +22,12 @@ const MapCTA = () => {
               Find properties in your preferred location with our interactive map view. 
               Easily filter by price, amenities, and more.
             </p>
-            <Link 
-              href="/map-view" 
-              className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              <Map className="h-4 w-4 mr-2" />
-              View Map
-            </Link>
+            <Button asChild>
+              <Link href="/map-view" className="inline-flex items-center">
+                <Map className="h-4 w-4 mr-2" />
+                View Map
+              </Link>
+            </Button>
           </div>
           
           <div className="w-full md:w-1/2 h-64 md:h-80 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
