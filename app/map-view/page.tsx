@@ -11,6 +11,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Filter, MapPin, Search, X } from "lucide-react";
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Add a component to display map loading status for debugging
 const MapStatus = ({ status, error }: { status: string; error?: any }) => {
@@ -27,9 +29,7 @@ const MapComponent = dynamic(() =>
   import('@/components/MapComponent')
     .then(mod => {
       console.log("MapComponent loaded successfully");
-      const Component = mod.default;
-      Component.displayName = 'MapComponent';
-      return Component;
+      return mod.default;
     })
     .catch(err => {
       console.error("Error loading MapComponent:", err);
@@ -47,7 +47,6 @@ const MapComponent = dynamic(() =>
           </Button>
         </div>
       );
-      FallbackComponent.displayName = 'MapComponentFallback';
       return FallbackComponent;
     }), 
   {
@@ -274,9 +273,9 @@ export default function MapViewPage() {
                         size="sm"
                   onClick={resetFilters}
                   className="text-xs h-8"
-                >
+                      >
                   Clear ({activeFilters})
-                </Button>
+                      </Button>
               )}
               <Button 
                 variant="ghost" 
@@ -304,84 +303,15 @@ export default function MapViewPage() {
               </div>
             </div>
 
-            {/* Price Range */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <Label>{t?.browse?.search?.priceRange || 'Price Range (TZS)'}</Label>
-                <div className="flex gap-2 text-sm">
-                  <span>{formatPriceLabel(priceRange[0])}</span>
-                  <span>-</span>
-                  <span>{formatPriceLabel(priceRange[1])}</span>
-                </div>
-              </div>
-              <div className="px-1 py-6">
-                {/* Your Slider component - here's a simplified representation */}
-                <div className="relative h-4">
-                  <div className="absolute inset-0 top-1/2 h-1 -translate-y-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  <div 
-                    className="absolute top-1/2 h-1 -translate-y-1/2 bg-primary rounded"
-                    style={{ 
-                      left: `${(priceRange[0] / 1000000) * 100}%`, 
-                      right: `${100 - (priceRange[1] / 1000000) * 100}%` 
-                    }}
-                  ></div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1000000}
-                    step={50000}
-                    value={priceRange[0]}
-                    onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                    className="absolute w-full opacity-0 cursor-pointer"
-                  />
-                  <input
-                    type="range"
-                    min={0}
-                    max={1000000}
-                    step={50000}
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                    className="absolute w-full opacity-0 cursor-pointer"
-                  />
-                  <div 
-                    className="absolute top-1/2 -translate-y-1/2 h-4 w-4 bg-primary rounded-full shadow"
-                    style={{ left: `${(priceRange[0] / 1000000) * 100}%` }}
-                  ></div>
-                  <div 
-                    className="absolute top-1/2 -translate-y-1/2 h-4 w-4 bg-primary rounded-full shadow"
-                    style={{ left: `${(priceRange[1] / 1000000) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Property Type */}
+            {/* Bathrooms */}
             <div className="space-y-2">
-              <Label>{t?.browse?.search?.propertyType || 'Property Type'}</Label>
-              <select
-                value={filters.propertyType}
-                onChange={(e) => handleFilterChange('propertyType', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                <option value="">{t?.browse?.search?.propertyTypes?.all || 'All Types'}</option>
-                <option value="apartment">Apartment</option>
-                <option value="house">House</option>
-                <option value="villa">Villa</option>
-                <option value="studio">Studio</option>
-              </select>
-            </div>
-
-            {/* Bedrooms */}
-            <div className="space-y-2">
-              <Label>{t?.browse?.search?.bedrooms || 'Bedrooms'}</Label>
-              <div className="grid grid-cols-6 gap-2">
-                {['Any', '1', '2', '3', '4', '5+'].map((num) => (
+              <Label>{t?.browse?.search?.filters?.bathrooms || 'Bathrooms'}</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {['Any', '1', '2', '3+'].map((num) => (
                   <Button
                     key={num}
-                    variant={filters.bedrooms === (num === 'Any' ? '' : num.replace('+', '')) ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleFilterChange('bedrooms', num === 'Any' ? '' : num.replace('+', ''))}
-                    className="h-9"
+                    variant={filters.bathrooms === num.toLowerCase() ? "default" : "outline"}
+                    onClick={() => handleFilterChange('bathrooms', num === 'Any' ? '' : num.toLowerCase())}
                   >
                     {num}
                   </Button>
@@ -389,17 +319,59 @@ export default function MapViewPage() {
               </div>
             </div>
 
-            {/* Bathrooms */}
+            {/* Price Range */}
+            <div className="space-y-4">
+              <Label>{t?.browse?.search?.filters?.priceRange || 'Price Range'}</Label>
+              <div className="px-2">
+                <Slider
+                  defaultValue={[0, 1000000]}
+                  max={1000000}
+                  step={50000}
+                  value={priceRange}
+                  onValueChange={setPriceRange}
+                  className="my-6"
+                />
+                <div className="flex justify-between mt-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {priceRange[0].toLocaleString()} TZS
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {priceRange[1].toLocaleString()} TZS
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Type */}
             <div className="space-y-2">
-              <Label>{t?.browse?.search?.bathrooms || 'Bathrooms'}</Label>
-              <div className="grid grid-cols-5 gap-2">
-                {['Any', '1', '2', '3', '4+'].map((num) => (
+              <Label>{t?.browse?.search?.propertyType || 'Property Type'}</Label>
+              <Select
+                value={filters.propertyType}
+                onValueChange={(value) => handleFilterChange('propertyType', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t?.browse?.search?.propertyTypes?.all || 'All Types'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">{t?.browse?.search?.propertyTypes?.all || 'All Types'}</SelectItem>
+                  <SelectItem value="apartment">{t?.browse?.search?.propertyTypes?.apartment || 'Apartment'}</SelectItem>
+                  <SelectItem value="house">{t?.browse?.search?.propertyTypes?.house || 'House'}</SelectItem>
+                  <SelectItem value="villa">{t?.browse?.search?.propertyTypes?.villa || 'Villa'}</SelectItem>
+                  <SelectItem value="studio">{t?.browse?.search?.propertyTypes?.studio || 'Studio'}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Bedrooms */}
+            <div className="space-y-2">
+              <Label>{t?.browse?.search?.filters?.bedrooms || 'Bedrooms'}</Label>
+              <div className="grid grid-cols-6 gap-2">
+                {['Any', '1', '2', '3', '4', '5+'].map((num) => (
                   <Button
                     key={num}
-                    variant={filters.bathrooms === (num === 'Any' ? '' : num.replace('+', '')) ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleFilterChange('bathrooms', num === 'Any' ? '' : num.replace('+', ''))}
-                    className="h-9"
+                    variant={filters.bedrooms === num.toLowerCase() ? "default" : "outline"}
+                    className="px-0"
+                    onClick={() => handleFilterChange('bedrooms', num === 'Any' ? '' : num.toLowerCase())}
                   >
                     {num}
                   </Button>
@@ -408,35 +380,40 @@ export default function MapViewPage() {
             </div>
 
             {/* Amenities */}
-            <div className="space-y-3">
-              <Label>{t?.browse?.search?.amenities || 'Amenities'}</Label>
+            <div className="space-y-2">
+              <Label>{t?.browse?.search?.filters?.amenities || 'Amenities'}</Label>
               <div className="grid grid-cols-2 gap-2">
                 {amenityOptions.map((amenity) => (
-                  <Button
+                  <div
                     key={amenity.id}
-                    variant={filters.amenities.includes(amenity.id) ? 'default' : 'outline'}
-                    size="sm"
+                    className={`flex items-center space-x-2 p-2 rounded-md border cursor-pointer transition-colors ${
+                      filters.amenities.includes(amenity.id)
+                        ? 'bg-primary/10 border-primary/50'
+                        : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                    }`}
                     onClick={() => handleAmenityToggle(amenity.id)}
-                    className="justify-start h-9"
                   >
-                    <span className="mr-2">{amenity.icon}</span>
-                    <span>{amenity.id.charAt(0).toUpperCase() + amenity.id.slice(1)}</span>
-                  </Button>
+                    <span className="text-lg">{amenity.icon}</span>
+                    <span className="text-sm">
+                      {t?.property?.amenities?.[amenity.id as keyof typeof t.property.amenities] || 
+                        amenity.id.charAt(0).toUpperCase() + amenity.id.slice(1)}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Sort options */}
             <div className="space-y-2">
-              <Label>{t?.browse?.search?.sortBy || 'Sort By'}</Label>
+              <Label>{t?.browse?.results?.sortBy || 'Sort By'}</Label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
-                <option value="newest">Newest</option>
-                <option value="priceAsc">Price (Low to High)</option>
-                <option value="priceDesc">Price (High to Low)</option>
+                <option value="newest">{t?.browse?.results?.sortOptions?.newest || 'Newest First'}</option>
+                <option value="priceAsc">{t?.browse?.results?.sortOptions?.priceAsc || 'Price (Low to High)'}</option>
+                <option value="priceDesc">{t?.browse?.results?.sortOptions?.priceDesc || 'Price (High to Low)'}</option>
               </select>
             </div>
 
@@ -444,7 +421,7 @@ export default function MapViewPage() {
             <div className="pt-4">
             <Button className="w-full">
                 <Search className="mr-2 h-4 w-4" />
-                {t?.browse?.search?.applyFilters || 'Search Properties'}
+                {t?.browse?.search?.searchButton || 'Search Properties'}
             </Button>
             </div>
           </div>

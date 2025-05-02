@@ -79,8 +79,8 @@ export default function AboutPage() {
             </div>
             <div className="w-full lg:w-1/2 order-1 lg:order-2">
               <div className="relative h-[400px] rounded-lg overflow-hidden shadow-2xl">
-                <Image
-                  src="/images/about-mission.jpg"
+                <Image 
+                  src="/images/about-mission.jpg" 
                   alt="Our Mission"
                   fill
                   style={{ objectFit: 'cover' }}

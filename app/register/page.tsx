@@ -311,7 +311,7 @@ export default function RegisterPage() {
                 htmlFor="agreeToTerms"
                 className={`text-sm ${errors.agreeToTerms ? 'text-red-500' : ''}`}
               >
-                {t?.auth?.register?.agreeToTerms || 'I agree to the'}{' '}
+                {t?.auth?.register?.agreeTerms || 'I agree to the'}{' '}
                 <Link
                   href="/terms"
                   className="text-primary hover:text-primary/90"

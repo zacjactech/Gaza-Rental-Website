@@ -119,11 +119,11 @@ export default function PropertiesPage() {
       case "active":
         return "success";
       case "pending":
-        return "warning";
+        return "secondary";
       case "inactive":
         return "destructive";
       default:
-        return "secondary";
+        return "outline";
     }
   };
 

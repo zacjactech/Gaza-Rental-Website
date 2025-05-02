@@ -201,7 +201,10 @@ export default function BrowsePage() {
       case 'priceDesc':
         return b.price - a.price;
       case 'newest':
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        if (a.createdAt && b.createdAt) {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+        return b.id - a.id;
       default:
         return 0;
     }
@@ -209,8 +212,11 @@ export default function BrowsePage() {
 
   // Filter properties
   const filteredProperties = sortedProperties.filter(property => {
-    if (filters.location && !t?.property?.items?.[property.locationKey]?.toLowerCase().includes(filters.location.toLowerCase())) {
-      return false;
+    if (filters.location && property.locationKey) {
+      const locationName = property.locationKey.toLowerCase();
+      if (!locationName.includes(filters.location.toLowerCase())) {
+        return false;
+      }
     }
     if (filters.propertyType && filters.propertyType !== 'all' && property.type !== filters.propertyType) {
       return false;
@@ -268,7 +274,7 @@ export default function BrowsePage() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="flex items-center gap-2">
                       <ArrowUpDown className="h-4 w-4" />
-                      {t?.browse?.results?.sortOptions?.[sortBy as keyof typeof t.browse.results.sortOptions]}
+                      {t?.browse?.results?.sortOptions?.[sortBy as keyof typeof t.browse.results.sortOptions] as string}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -277,7 +283,7 @@ export default function BrowsePage() {
                         key={key}
                         onClick={() => setSortBy(key)}
                       >
-                        {value}
+                        {value as string}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -311,7 +317,7 @@ export default function BrowsePage() {
                   {Object.entries(t?.browse?.search?.propertyTypes || {}).map(([key, value]) => (
                     key !== 'all' && (
                       <SelectItem key={key} value={key}>
-                        {value}
+                        {value as string}
                       </SelectItem>
                     )
                   ))}
@@ -424,7 +430,7 @@ export default function BrowsePage() {
                         className="flex items-center gap-1.5"
                       >
                         <span>{amenity.icon}</span>
-                        {t?.property?.amenities?.[amenity.id as keyof typeof t.property.amenities]}
+                        {t?.property?.amenities?.[amenity.id as keyof typeof t.property.amenities] as string}
                       </Button>
                     ))}
                   </div>

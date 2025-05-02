@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { 
   ArrowLeft, Save, Trash, Home, MapPin, 
-  DollarSign, Bed, Bath, SquareFootage, 
+  DollarSign, Bed, Bath, Square, 
   Image as ImageIcon, InfoIcon, CheckCircle 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -359,7 +359,7 @@ export default function EditPropertyPage() {
                   <div className="space-y-2">
                     <Label htmlFor="area">Area (sq.m)</Label>
                     <div className="relative">
-                      <SquareFootage className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Square className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="area"
                         name="area"
