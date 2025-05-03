@@ -5,14 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye } from "lucide-react";
 import { EyeOff } from "lucide-react";
-import { GithubIcon } from "lucide-react";
-import { Mail } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -342,48 +339,6 @@ export default function RegisterPage() {
               t?.auth?.register?.create || 'Create Account'
             )}
           </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">
-                {t?.auth?.register?.orContinueWith || 'Or continue with'}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full flex items-center justify-center hover:bg-primary/10"
-              onClick={() => {
-                toast({
-                  title: "Coming Soon",
-                  description: "Google authentication will be available soon.",
-                });
-              }}
-            >
-              <Mail className="h-5 w-5 mr-2" />
-              Google
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full flex items-center justify-center hover:bg-primary/10"
-              onClick={() => {
-                toast({
-                  title: "Coming Soon",
-                  description: "GitHub authentication will be available soon.",
-                });
-              }}
-            >
-              <GithubIcon className="h-5 w-5 mr-2" />
-              GitHub
-            </Button>
-          </div>
 
           <p className="text-center text-sm text-gray-600 dark:text-gray-400">
             {t?.auth?.register?.haveAccount || 'Already have an account?'}{' '}

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import Script from 'next/script';
 import type { LatLngTuple } from 'leaflet';
 import { Button } from '@/components/ui/button';
+import { RefreshCw, AlertTriangle } from 'lucide-react';
 
 // Add CSS with !important rules to override any conflicting styles
 const mapStyles = `
@@ -61,35 +62,52 @@ interface MapComponentProps {
   onError?: (error: any) => void;
 }
 
-const MapComponent = ({ properties, onPropertySelect, onLoad, onError }: MapComponentProps) => {
+// Throttle function to improve performance
+const throttle = (fn: Function, delay: number) => {
+  let lastCall = 0;
+  return (...args: any[]) => {
+    const now = new Date().getTime();
+    if (now - lastCall < delay) {
+      return;
+    }
+    lastCall = now;
+    return fn(...args);
+  };
+};
+
+const MapComponent = memo(({ properties, onPropertySelect, onLoad, onError }: MapComponentProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [leafletLoaded, setLeafletLoaded] = useState(false);
+  const [initAttempts, setInitAttempts] = useState(0);
   
   // Track component mount status
   const isMountedRef = useRef(true);
 
-  // Function to log for debugging
-  const log = (message: string) => {
+  // Function to log for debugging - only in development
+  const log = useCallback((message: string) => {
+    if (process.env.NODE_ENV === 'development') {
     console.log(`[MapComponent] ${message}`);
-  };
+    }
+  }, []);
 
   // Handle Leaflet script loading success
-  const handleScriptLoad = () => {
+  const handleScriptLoad = useCallback(() => {
     log('Leaflet script loaded successfully');
     setLeafletLoaded(true);
-  };
+  }, [log]);
 
   // Handle Leaflet script loading error
-  const handleScriptError = () => {
+  const handleScriptError = useCallback(() => {
     log('Failed to load Leaflet script');
     setHasError(true);
     setErrorMessage('Failed to load map library');
     if (onError) onError(new Error('Failed to load Leaflet script'));
-  };
+  }, [log, onError]);
 
   // Initialize the map once Leaflet is loaded and container is ready
   useEffect(() => {
@@ -110,13 +128,12 @@ const MapComponent = ({ properties, onPropertySelect, onLoad, onError }: MapComp
       try {
         log("Initializing map...");
         
-        // Ensure window and L are available
-        if (typeof window === 'undefined' || !window.L) {
+        // Direct script import approach
+        const L = window.L || require('leaflet');
+        
+        if (!L) {
           throw new Error('Leaflet not available');
         }
-        
-        // Get L from the window object (already loaded via script)
-        const L = window.L;
         
         // Fix Leaflet default icon issues
         delete L.Icon.Default.prototype._getIconUrl;
@@ -137,23 +154,36 @@ const MapComponent = ({ properties, onPropertySelect, onLoad, onError }: MapComp
         // Default center coordinates
         const defaultCenter: LatLngTuple = [-6.776, 39.178]; // Dar es Salaam, Tanzania
         
-        // Initialize map with animations disabled
+        // Initialize map with performance options
         const map = L.map(mapRef.current, {
           fadeAnimation: false,
           zoomAnimation: false,
           markerZoomAnimation: false,
-          preferCanvas: true // Use canvas renderer for better performance
+          preferCanvas: true, // Use canvas renderer for better performance
+          attributionControl: false,
+          zoomControl: false,
+          renderer: L.canvas() // Force canvas renderer
         }).setView(defaultCenter, 13);
+        
+        // Add zoom control at bottom right for better UX
+        L.control.zoom({
+          position: 'bottomright'
+        }).addTo(map);
         
         // Store map instance
         mapInstanceRef.current = map;
         
-        // Add tile layer
+        // Add tile layer with minimal attribution
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution: '© OSM',
+          maxZoom: 18,
+          minZoom: 3,
+          updateWhenIdle: true,
+          updateWhenZooming: false,
+          keepBuffer: 2
         }).addTo(map);
         
-        // Create custom marker icon
+        // Create custom marker icon - predefine once
         const customIcon = L.divIcon({
           className: 'custom-marker',
           html: `<div class="bg-primary text-white rounded-full p-1 flex items-center justify-center shadow-md" style="width: 36px; height: 36px;">
@@ -164,18 +194,21 @@ const MapComponent = ({ properties, onPropertySelect, onLoad, onError }: MapComp
           popupAnchor: [0, -36]
         });
         
-        // Add map event listeners for debugging
-        map.on('load', () => log('Map load event fired'));
-        map.on('layeradd', () => log('Layer added to map'));
-
-        // Add markers for each property
+        // Add markers for each property - in batches for better performance
         if (properties.length > 0) {
-        properties.forEach(property => {
+          const addMarkersInBatches = (props: Property[], batchSize: number, delay: number) => {
+            const markers: any[] = [];
+            const addBatch = (startIdx: number) => {
+              const endIdx = Math.min(startIdx + batchSize, props.length);
+              
+              for (let i = startIdx; i < endIdx; i++) {
+                const property = props[i];
           const { coordinates, title, titleKey, price, currency } = property;
           const propertyTitle = title || titleKey || 'Property';
           
             // Create marker
             const marker = L.marker(coordinates, { icon: customIcon }).addTo(map);
+                markers.push(marker);
           
           // Create popup content
           const popupContent = `
@@ -200,135 +233,149 @@ const MapComponent = ({ properties, onPropertySelect, onLoad, onError }: MapComp
               onPropertySelect(property);
             }
           });
-        });
-
-          // Fit map to all markers
-          const bounds = L.latLngBounds(properties.map(p => p.coordinates));
-          map.fitBounds(bounds, { padding: [50, 50] });
+              }
+              
+              // Process next batch if needed
+              if (endIdx < props.length && isMountedRef.current) {
+                setTimeout(() => addBatch(endIdx), delay);
+              }
+            };
+            
+            // Start adding markers in batches
+            addBatch(0);
+            
+            return markers;
+          };
+          
+          // Add markers in batches of 10 with 10ms delay between batches
+          markersRef.current = addMarkersInBatches(properties, 10, 10);
+          
+          // Set bounds to show all properties when there are multiple
+          if (properties.length > 1) {
+            const bounds = L.latLngBounds(properties.map(p => p.coordinates));
+            map.fitBounds(bounds, { padding: [50, 50] });
+          }
         }
         
-        // Force a resize after a delay to ensure proper rendering
-        setTimeout(() => {
-          if (isMountedRef.current && mapInstanceRef.current) {
-            mapInstanceRef.current.invalidateSize({ animate: false });
-            
-            log("Map initialized successfully");
-            setIsMapInitialized(true);
-            if (onLoad) onLoad();
-          }
-        }, 300);
-        
-        // Add resize handler to handle container size changes
-        const handleResize = () => {
-          if (mapInstanceRef.current && isMountedRef.current) {
+        // Add map resize handler for better mobile experience
+        const handleResize = throttle(() => {
+          if (mapInstanceRef.current) {
             mapInstanceRef.current.invalidateSize();
           }
-        };
+        }, 100);
         
         window.addEventListener('resize', handleResize);
         
-        // Cleanup function
-        return () => {
-          window.removeEventListener('resize', handleResize);
-        };
+        // Map is ready
+        setIsMapInitialized(true);
+        log('Map initialized successfully');
         
-      } catch (error) {
-        console.error("Error initializing map:", error);
-        if (isMountedRef.current) {
+        // Notify parent component
+        if (onLoad) onLoad();
+        
+      } catch (err) {
+        log(`Map initialization error: ${err}`);
           setHasError(true);
-          setErrorMessage(error instanceof Error ? error.message : 'Failed to initialize map');
+        
+        // Try to provide useful error messages depending on the type of error
+        const error = err as Error;
+        setErrorMessage(error.message || 'Failed to initialize map');
+        
           if (onError) onError(error);
+        
+        // Retry initialization a few times
+        if (initAttempts < 3) {
+          setInitAttempts(prev => prev + 1);
+          setLeafletLoaded(false); // Reset to try again
+          setTimeout(() => {
+            setLeafletLoaded(true);
+          }, 1000);
         }
       }
-    }, 200);
+    }, 300);
     
     return () => {
       clearTimeout(initTimeout);
     };
-  }, [leafletLoaded, properties, onPropertySelect, onLoad, onError, hasError, isMapInitialized]);
+  }, [leafletLoaded, hasError, isMapInitialized, properties, onPropertySelect, onLoad, onError, log, initAttempts]);
   
   // Clean up on unmount
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
       
-      // Clean up the map instance if it exists
+      // Clean up map instance
       if (mapInstanceRef.current) {
-        log("Removing map instance...");
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
+      
+      // Clean up markers
+      markersRef.current = [];
     };
   }, []);
 
-  // Render fallback UI if there's an error
-  if (hasError) {
-    return (
-      <div className="flex flex-col items-center justify-center w-full h-full min-h-[500px] bg-gray-100 dark:bg-gray-800 p-6 rounded-md">
-        <div className="text-red-500 mb-4 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <p className="font-semibold">Failed to load map</p>
-          {errorMessage && <p className="text-sm mt-1">{errorMessage}</p>}
-        </div>
-        <Button 
-          onClick={() => window.location.reload()}
-        >
-          Retry
-        </Button>
-      </div>
-    );
-  }
+  // Force reload the map
+  const handleReload = () => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
+    }
+    markersRef.current = [];
+    setIsMapInitialized(false);
+    setHasError(false);
+    setErrorMessage('');
+    setLeafletLoaded(false);
+    setTimeout(() => {
+      setLeafletLoaded(true);
+    }, 100);
+  };
 
+  // Render the map container and loading states
   return (
-    <>
-      {/* Load Leaflet script directly for more reliability */}
+    <div className="relative min-h-[500px] w-full overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
+      {/* Leaflet Script (direct CDN approach for better reliability) */}
       <Script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        strategy="afterInteractive"
         onLoad={handleScriptLoad}
         onError={handleScriptError}
+        strategy="beforeInteractive"
       />
+      <style>{mapStyles}</style>
       
-      <style jsx global>{mapStyles}</style>
-      
-      <div 
-        ref={mapRef} 
-        className="relative h-full w-full" 
-        style={{ 
-          minHeight: '500px', 
-          height: '100%', 
-          width: '100%',
-          opacity: isMapInitialized ? 1 : 0,
-          transition: 'opacity 0.3s ease-in-out',
-          backgroundColor: '#f8f9fa'
-        }} 
-        data-map-status={isMapInitialized ? 'initialized' : 'loading'}
-      />
-      
-      {!isMapInitialized && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-          <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-300">Loading map...</p>
-          </div>
+      {!isMapInitialized && !hasError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">Loading map...</p>
         </div>
       )}
       
-      {/* Add a global style for Leaflet CSS */}
-      <style jsx global>{`
-        @import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      `}</style>
-    </>
+      {hasError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 p-4">
+          <AlertTriangle className="h-10 w-10 text-yellow-500 mb-2" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Map Loading Error</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">{errorMessage}</p>
+          <Button onClick={handleReload} variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Reload Map
+          </Button>
+        </div>
+      )}
+      
+      <div 
+        ref={mapRef} 
+        className={`w-full h-full rounded-xl ${isMapInitialized ? 'opacity-100' : 'opacity-0'}`}
+        style={{ transition: 'opacity 0.3s ease-in-out' }}
+      ></div>
+    </div>
   );
-};
+});
+
+MapComponent.displayName = 'MapComponent';
 
 export default MapComponent;
 
-// Add type definitions for Leaflet global
+// Add TypeScript interface for Window with Leaflet
 declare global {
   interface Window {
     L: any;

@@ -1,5 +1,5 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import Header from '@/components/Header';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -23,10 +23,15 @@ const inter = Inter({
   fallback: ['system-ui', 'sans-serif'],
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   title: 'GazaRenter - Find Your Home in Tanzania',
   description: 'Tanzania\'s premier house rental platform connecting landlords and tenants with verified listings and secure booking.',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
   other: {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
@@ -60,7 +65,7 @@ export default function RootLayout({
             <Header />
             <PageTransition>
               <Suspense fallback={<div className="container py-8">Loading...</div>}>
-                {children}
+              {children}
               </Suspense>
             </PageTransition>
             <ScrollToTop />

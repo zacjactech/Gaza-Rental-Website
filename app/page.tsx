@@ -4,15 +4,33 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Hero from '@/components/Hero';
 import PropertyCard from '@/components/PropertyCard';
-import MapCTA from '@/components/MapCTA';
-import TrustFactors from '@/components/TrustFactors';
-import Testimonials from '@/components/Testimonials';
-import Footer from '@/components/Footer';
-import Features from '@/components/Features';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import non-critical components
+const MapCTA = dynamic(() => import('@/components/MapCTA'), {
+  loading: () => <div className="h-96 bg-gray-100 dark:bg-gray-800 animate-pulse"></div>,
+  ssr: true,
+});
+
+const TrustFactors = dynamic(() => import('@/components/TrustFactors'), {
+  loading: () => <div className="h-60 bg-white dark:bg-gray-700 animate-pulse"></div>,
+});
+
+const Testimonials = dynamic(() => import('@/components/Testimonials'), {
+  loading: () => <div className="h-96 bg-gray-50 dark:bg-gray-900 animate-pulse"></div>,
+});
+
+const Features = dynamic(() => import('@/components/Features'), {
+  loading: () => <div className="h-80 bg-white dark:bg-gray-800 animate-pulse"></div>,
+});
+
+const Footer = dynamic(() => import('@/components/Footer'), {
+  ssr: true,
+});
 
 export default function Home() {
   const { language } = useLanguage();
@@ -149,17 +167,14 @@ export default function Home() {
           </div>
 
           <div className="text-center">
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="font-medium"
+            <Link 
+              href="/browse" 
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4 text-base"
+              prefetch={true}
             >
-              <Link href="/browse" className="inline-flex items-center gap-2">
                 {t?.browse?.title}
-                <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
-            </Button>
           </div>
         </div>
       </section>

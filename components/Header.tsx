@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Menu, X, Home, LogIn, Building, Users } from 'lucide-react';
+import { Menu, X, Home, LogIn, Building, Users, Phone } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
@@ -61,6 +61,14 @@ const Header = () => {
               prefetch={true}
             >
               {t.footer.quickLinks.about}
+            </Link>
+            <Link 
+              href="/contact"
+              className={`${isActive('/contact')} hover:text-primary transition-all duration-200 hover:scale-105 py-1 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
+              prefetch={true}
+            >
+              <Phone className="h-3.5 w-3.5 inline mr-1" />
+              {t.nav.contact}
             </Link>
             <Link 
               href="/dashboard/landlord"
@@ -148,6 +156,15 @@ const Header = () => {
               {t.footer.quickLinks.about}
             </Link>
             <Link 
+              href="/contact"
+              className={`${isActive('/contact')} hover:text-primary transition-colors text-sm text-left py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
+              onClick={closeMenu}
+              prefetch={true}
+            >
+              <Phone className="h-3.5 w-3.5 inline mr-1" />
+              {t.nav.contact}
+            </Link>
+            <Link 
               href="/dashboard/landlord"
               className={`${isActive('/dashboard/landlord')} hover:text-primary transition-colors text-sm text-left py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
               onClick={closeMenu}
@@ -180,9 +197,9 @@ const Header = () => {
               onClick={closeMenu}
               prefetch={true}
             >
-              <LogIn className="h-3.5 w-3.5 mr-1" />
-              <span>{t.nav.login}</span>
-            </Link>
+                <LogIn className="h-3.5 w-3.5 mr-1" />
+                <span>{t.nav.login}</span>
+              </Link>
           </nav>
         </div>
       )}

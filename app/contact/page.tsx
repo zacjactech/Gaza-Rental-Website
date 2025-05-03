@@ -115,8 +115,8 @@ export default function ContactPage() {
                     <Mail className="h-5 w-5 text-primary mr-3 mt-0.5" />
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</p>
-                      <a href="mailto:info@gazarenter.com" className="text-gray-900 dark:text-white hover:text-primary">
-                        info@gazarenter.com
+                      <a href="mailto:Jumachambala@gmail.com" className="text-gray-900 dark:text-white hover:text-primary">
+                        Jumachambala@gmail.com
                       </a>
                     </div>
                   </div>
@@ -125,8 +125,8 @@ export default function ContactPage() {
                     <Phone className="h-5 w-5 text-primary mr-3 mt-0.5" />
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Phone</p>
-                      <a href="tel:+255765432198" className="text-gray-900 dark:text-white hover:text-primary">
-                        +255 765 432 198
+                      <a href="tel:+255654051913" className="text-gray-900 dark:text-white hover:text-primary">
+                        +255 654051913
                       </a>
                     </div>
                   </div>
@@ -136,7 +136,6 @@ export default function ContactPage() {
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Address</p>
                       <address className="not-italic text-gray-900 dark:text-white">
-                        123 Samora Avenue<br />
                         Dar es Salaam, Tanzania
                       </address>
                     </div>

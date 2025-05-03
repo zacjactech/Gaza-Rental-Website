@@ -15,14 +15,16 @@ import {
   CreditCard,
   LifeBuoy
 } from "lucide-react"
+import Link from "next/link"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { translations } from "@/translations"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import { getTranslation } from "@/utils/translation"
 
 // Mock data
 const properties = [
@@ -136,7 +138,6 @@ const StatCard = ({ title, value, description, icon, trend, percentage }: StatCa
 
 export default function LandlordDashboardPage() {
   const { language } = useLanguage()
-  const t = translations[language]
   const router = useRouter()
   const [activeProperties, setActiveProperties] = useState(0)
   const [inactiveProperties, setInactiveProperties] = useState(0)
@@ -163,24 +164,81 @@ export default function LandlordDashboardPage() {
     <div className="p-6">
       <div className="flex flex-col md:flex-row justify-between items-start mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Landlord Dashboard</h1>
-          <p className="text-muted-foreground">Manage your properties and view insights.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{getTranslation('dashboard.landlord.title', "Landlord Dashboard", language)}</h1>
+          <p className="text-muted-foreground">{getTranslation('dashboard.landlord.welcome', "Manage your properties and view insights.", language)}</p>
         </div>
         <Button className="mt-4 md:mt-0" onClick={() => router.push('/dashboard/landlord/properties/new')}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add New Property
+          {getTranslation('dashboard.landlord.actions.addProperty', "Add New Property", language)}
         </Button>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <Card className="col-span-2 md:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">{getTranslation('dashboard.landlord.billing', "Billing", language)}</CardTitle>
+          </CardHeader>
+          <CardContent className="pb-2">
+            <div className="flex items-center">
+              <div className="mr-2 bg-primary/10 p-2 rounded-full">
+                <CreditCard className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Standard Plan</p>
+                <p className="text-xs text-muted-foreground">Active until June 1, 2024</p>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="pt-0">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={() => router.push('/dashboard/landlord/billing')}
+            >
+              {getTranslation('dashboard.landlord.actions.manageBilling', "Manage Billing", language)}
+            </Button>
+          </CardFooter>
+        </Card>
+        
+        <Card className="col-span-2 md:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">{getTranslation('dashboard.landlord.help', "Help Center", language)}</CardTitle>
+          </CardHeader>
+          <CardContent className="pb-2">
+            <div className="flex items-center">
+              <div className="mr-2 bg-primary/10 p-2 rounded-full">
+                <LifeBuoy className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Support Available</p>
+                <p className="text-xs text-muted-foreground">24/7 assistance for landlords</p>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="pt-0">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={() => router.push('/dashboard/landlord/help')}
+            >
+              {getTranslation('dashboard.landlord.actions.getHelp', "Get Help", language)}
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <StatCard
-          title="Properties"
+          title={getTranslation('dashboard.landlord.properties', "Properties", language)}
           value={activeProperties + inactiveProperties}
           description={`${activeProperties} active, ${inactiveProperties} inactive`}
           icon={<Home className="h-4 w-4" />}
         />
         <StatCard
-          title="Applications"
+          title={getTranslation('dashboard.landlord.requests', "Applications", language)}
           value={totalApplications}
           description="Total applications received"
           icon={<Users className="h-4 w-4" />}
@@ -188,7 +246,7 @@ export default function LandlordDashboardPage() {
           percentage={12}
         />
         <StatCard
-          title="Messages"
+          title={getTranslation('dashboard.landlord.messages', "Messages", language)}
           value={messages.length}
           description={`${unreadMessages} unread messages`}
           icon={<MessageSquare className="h-4 w-4" />}
@@ -205,9 +263,9 @@ export default function LandlordDashboardPage() {
 
       <Tabs defaultValue="properties" className="mb-6">
         <TabsList>
-          <TabsTrigger value="properties">Properties</TabsTrigger>
-          <TabsTrigger value="applications">Recent Applications</TabsTrigger>
-          <TabsTrigger value="messages">Messages</TabsTrigger>
+          <TabsTrigger value="properties">{getTranslation('dashboard.landlord.properties', "Properties", language)}</TabsTrigger>
+          <TabsTrigger value="applications">{getTranslation('dashboard.landlord.requests', "Applications", language)}</TabsTrigger>
+          <TabsTrigger value="messages">{getTranslation('dashboard.landlord.messages', "Messages", language)}</TabsTrigger>
         </TabsList>
         <TabsContent value="properties" className="space-y-4 mt-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -440,6 +498,7 @@ export default function LandlordDashboardPage() {
               <Button 
                 variant="outline"
                 className="w-full"
+                onClick={() => router.push('/dashboard/landlord/billing')}
               >
                 <CreditCard className="mr-2 h-4 w-4" />
                 Manage Billing
@@ -459,6 +518,7 @@ export default function LandlordDashboardPage() {
               <Button 
                 variant="outline"
                 className="w-full"
+                onClick={() => router.push('/dashboard/landlord/help')}
               >
                 <LifeBuoy className="mr-2 h-4 w-4" />
                 Get Help

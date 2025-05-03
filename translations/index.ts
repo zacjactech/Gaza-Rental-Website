@@ -10,6 +10,7 @@ export type TranslationType = {
       profile: string;
       favorites: string;
       notifications: string;
+      contact: string;
     };
     common: {
       backToHome: string;
@@ -56,7 +57,8 @@ export const translations: TranslationType = {
       register: 'REGISTER',
       profile: 'Profile',
       favorites: 'Favorites',
-      notifications: 'Notifications'
+      notifications: 'Notifications',
+      contact: 'Contact Us'
     },
     common: {
       backToHome: 'Back to Home',
@@ -329,9 +331,9 @@ export const translations: TranslationType = {
       },
       contact: {
         title: 'Contact Us',
-        email: 'info@gazarenter.com',
-        phone: '+255 755 123 456',
-        address: 'Upanga, Dar es Salaam, Tanzania',
+        email: 'Jumachambala@gmail.com',
+        phone: '+255 654051913',
+        address: 'Dar es Salaam, Tanzania',
         hours: 'Mon - Sat: 9:00 AM - 6:00 PM'
       },
       social: {
@@ -351,17 +353,24 @@ export const translations: TranslationType = {
     },
     contact: {
       title: 'Contact Us',
-      subtitle: 'We\'d love to hear from you',
+      subtitle: 'Get in touch with our team',
+      form: {
       name: 'Your Name',
       email: 'Email Address',
-      phone: 'Phone Number (Optional)',
+        phone: 'Phone Number',
       message: 'Your Message',
-      formTitle: 'Send us a Message',
       send: 'Send Message',
       sending: 'Sending...',
-      hours: 'Business Hours',
-      success: 'Your message has been sent successfully!',
-      error: 'Failed to send message. Please try again.'
+        success: 'Your message has been sent successfully',
+        error: 'Failed to send your message'
+      },
+      info: {
+        title: 'Contact Information',
+        email: 'Jumachambala@gmail.com',
+        phone: '+255 654051913',
+        location: 'Dar es Salaam, Tanzania',
+        hours: 'Monday - Friday: 9AM - 5PM'
+      }
     },
     about: {
       hero: {
@@ -524,6 +533,102 @@ export const translations: TranslationType = {
           content: 'If you have any questions about this Privacy Policy, please contact us at privacy@gazarenter.com.'
         }
       }
+    },
+    testimonialPage: {
+      title: 'User Testimonials',
+      subtitle: 'See what our users are saying about their experience',
+      reviewTitle: 'Leave a Review',
+      reviewSubtitle: 'Share your experience with GazaRenter',
+      form: {
+        name: 'Your Name',
+        email: 'Email Address',
+        rating: 'Rating',
+        comment: 'Your Experience',
+        submit: 'Submit Review',
+        success: 'Thank you for your review!',
+        error: 'Failed to submit your review'
+      }
+    },
+    dashboard: {
+      landlord: {
+        title: 'Landlord Dashboard',
+        welcome: 'Welcome back',
+        properties: 'My Properties',
+        listings: 'Listings',
+        requests: 'Requests',
+        messages: 'Messages',
+        payments: 'Payments',
+        settings: 'Settings',
+        billing: 'Billing',
+        help: 'Help Center',
+        analytics: 'Analytics',
+        summary: 'Summary',
+        stats: {
+          active: 'Active Properties',
+          views: 'Total Views',
+          requests: 'Booking Requests',
+          earnings: 'Monthly Earnings'
+        },
+        actions: {
+          addProperty: 'Add New Property',
+          viewAll: 'View All',
+          manageProperties: 'Manage Properties',
+          manageRequests: 'Manage Requests',
+          viewMessages: 'View Messages',
+          manageBilling: 'Manage Billing',
+          getHelp: 'Get Help',
+          logout: 'Log Out'
+        },
+        property: {
+          title: 'Property Name',
+          location: 'Location',
+          price: 'Price',
+          status: 'Status',
+          views: 'Views',
+          requests: 'Requests',
+          action: 'Action',
+          active: 'Active',
+          inactive: 'Inactive',
+          edit: 'Edit',
+          delete: 'Delete',
+          view: 'View',
+          activate: 'Activate',
+          deactivate: 'Deactivate'
+        },
+        billing: {
+          title: 'Manage Billing',
+          currentPlan: 'Current Plan',
+          planDetails: 'Plan Details',
+          nextBilling: 'Next Billing Date',
+          paymentMethods: 'Payment Methods',
+          invoices: 'Invoices',
+          addPayment: 'Add Payment Method',
+          makePrimary: 'Make Primary',
+          remove: 'Remove',
+          upgradeButton: 'Upgrade Plan',
+          downloadInvoice: 'Download',
+          planStatus: 'Status: Active',
+          features: 'Features Included',
+          viewInvoices: 'View All Invoices'
+        },
+        help: {
+          title: 'Kituo cha Msaada',
+          search: 'Tafuta msaada',
+          faqs: 'Maswali Yanayoulizwa Mara kwa Mara',
+          contactSupport: 'Wasiliana na Msaada',
+          guides: 'Mwongozo na Mafunzo',
+          liveChat: 'Mazungumzo ya Moja kwa Moja',
+          ticket: 'Wasilisha Tiketi',
+          callUs: 'Tupigie Simu',
+          faqTopics: {
+            account: 'Akaunti na Bili',
+            properties: 'Kusimamia Mali',
+            payments: 'Malipo na Fedha',
+            bookings: 'Uhifadhi na Maombi',
+            technical: 'Matatizo ya Kiufundi'
+          }
+        }
+      }
     }
   },
   sw: {
@@ -535,7 +640,8 @@ export const translations: TranslationType = {
       register: 'JIANDIKISHE',
       profile: 'Wasifu',
       favorites: 'Vipendwa',
-      notifications: 'Taarifa'
+      notifications: 'Taarifa',
+      contact: 'Wasiliana Nasi'
     },
     common: {
       backToHome: 'Rudi Nyumbani',
@@ -808,9 +914,9 @@ export const translations: TranslationType = {
       },
       contact: {
         title: 'Wasiliana Nasi',
-        email: 'info@gazarenter.com',
-        phone: '+255 755 123 456',
-        address: 'Upanga, Dar es Salaam, Tanzania',
+        email: 'Jumachambala@gmail.com',
+        phone: '+255 654051913',
+        address: 'Dar es Salaam, Tanzania',
         hours: 'Jumatatu - Jumamosi: 9:00 AM - 6:00 PM'
       },
       social: {
@@ -830,17 +936,24 @@ export const translations: TranslationType = {
     },
     contact: {
       title: 'Wasiliana Nasi',
-      subtitle: 'Tungependa kusikia kutoka kwako',
+      subtitle: 'Wasiliana na timu yetu',
+      form: {
       name: 'Jina Lako',
       email: 'Barua Pepe',
-      phone: 'Namba ya Simu (Hiari)',
+        phone: 'Namba ya Simu',
       message: 'Ujumbe Wako',
-      formTitle: 'Tutumie Ujumbe',
       send: 'Tuma Ujumbe',
       sending: 'Inatuma...',
-      hours: 'Saa za Biashara',
-      success: 'Ujumbe wako umetumwa kikamilifu!',
-      error: 'Imeshindwa kutuma ujumbe. Tafadhali jaribu tena.'
+        success: 'Ujumbe wako umetumwa kwa mafanikio',
+        error: 'Imeshindwa kutuma ujumbe wako'
+      },
+      info: {
+        title: 'Maelezo ya Mawasiliano',
+        email: 'Jumachambala@gmail.com',
+        phone: '+255 654051913',
+        location: 'Dar es Salaam, Tanzania',
+        hours: 'Jumatatu - Ijumaa: 9AM - 5PM'
+      }
     },
     about: {
       hero: {
@@ -1051,6 +1164,102 @@ export const translations: TranslationType = {
         contact: {
           title: 'Wasiliana Nasi',
           content: 'Ikiwa una maswali yoyote kuhusu Sera hii ya Faragha, tafadhali wasiliana nasi kwa privacy@gazarenter.com.'
+        }
+      }
+    },
+    testimonialPage: {
+      title: 'Maoni ya Wateja',
+      subtitle: 'Tazama wateja wetu wanasema nini kuhusu huduma zetu',
+      reviewTitle: 'Toa Maoni',
+      reviewSubtitle: 'Shiriki uzoefu wako na GazaRenter',
+      form: {
+        name: 'Jina Lako',
+        email: 'Barua Pepe',
+        rating: 'Kiwango',
+        comment: 'Uzoefu Wako',
+        submit: 'Wasilisha Maoni',
+        success: 'Asante kwa maoni yako!',
+        error: 'Imeshindwa kuwasilisha maoni yako'
+      }
+    },
+    dashboard: {
+      landlord: {
+        title: 'Dashibodi ya Mmiliki',
+        welcome: 'Karibu tena',
+        properties: 'Mali Zangu',
+        listings: 'Orodha',
+        requests: 'Maombi',
+        messages: 'Ujumbe',
+        payments: 'Malipo',
+        settings: 'Mipangilio',
+        billing: 'Bili',
+        help: 'Kituo cha Msaada',
+        analytics: 'Uchambuzi',
+        summary: 'Muhtasari',
+        stats: {
+          active: 'Mali Zinazotumika',
+          views: 'Jumla ya Mitazamo',
+          requests: 'Maombi ya Kuhifadhi',
+          earnings: 'Mapato ya Kila Mwezi'
+        },
+        actions: {
+          addProperty: 'Ongeza Mali Mpya',
+          viewAll: 'Tazama Zote',
+          manageProperties: 'Simamia Mali',
+          manageRequests: 'Simamia Maombi',
+          viewMessages: 'Ona Ujumbe',
+          manageBilling: 'Simamia Bili',
+          getHelp: 'Pata Msaada',
+          logout: 'Toka'
+        },
+        property: {
+          title: 'Jina la Mali',
+          location: 'Eneo',
+          price: 'Bei',
+          status: 'Hali',
+          views: 'Mitazamo',
+          requests: 'Maombi',
+          action: 'Tendo',
+          active: 'Inatumika',
+          inactive: 'Haijatumika',
+          edit: 'Hariri',
+          delete: 'Futa',
+          view: 'Tazama',
+          activate: 'Washa',
+          deactivate: 'Zima'
+        },
+        billing: {
+          title: 'Simamia Bili',
+          currentPlan: 'Mpango wa Sasa',
+          planDetails: 'Maelezo ya Mpango',
+          nextBilling: 'Tarehe ya Bili Ijayo',
+          paymentMethods: 'Njia za Malipo',
+          invoices: 'Ankara',
+          addPayment: 'Ongeza Njia ya Malipo',
+          makePrimary: 'Fanya Kuu',
+          remove: 'Ondoa',
+          upgradeButton: 'Boresha Mpango',
+          downloadInvoice: 'Pakua',
+          planStatus: 'Hali: Inatumika',
+          features: 'Vipengele Vilivyojumuishwa',
+          viewInvoices: 'Tazama Ankara Zote'
+        },
+        help: {
+          title: 'Kituo cha Msaada',
+          search: 'Tafuta msaada',
+          faqs: 'Maswali Yanayoulizwa Mara kwa Mara',
+          contactSupport: 'Wasiliana na Msaada',
+          guides: 'Mwongozo na Mafunzo',
+          liveChat: 'Mazungumzo ya Moja kwa Moja',
+          ticket: 'Wasilisha Tiketi',
+          callUs: 'Tupigie Simu',
+          faqTopics: {
+            account: 'Akaunti na Bili',
+            properties: 'Kusimamia Mali',
+            payments: 'Malipo na Fedha',
+            bookings: 'Uhifadhi na Maombi',
+            technical: 'Matatizo ya Kiufundi'
+          }
         }
       }
     }

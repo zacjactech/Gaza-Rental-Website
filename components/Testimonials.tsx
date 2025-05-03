@@ -30,7 +30,7 @@ const defaultTestimonials: TestimonialData[] = [
     roleKey: 'john_doe',
     rating: 5,
     commentKey: 'john_doe',
-    image: '/testimonials/john-doe.jpg',
+    image: '/testimonials/placeholder.svg',
     location: 'Dar es Salaam',
     date: '2024-02-15'
   },
@@ -40,7 +40,7 @@ const defaultTestimonials: TestimonialData[] = [
     roleKey: 'mary_smith',
     rating: 5,
     commentKey: 'mary_smith',
-    image: '/testimonials/mary-smith.jpg',
+    image: '/testimonials/placeholder.svg',
     location: 'Arusha',
     date: '2024-02-10'
   },
@@ -50,7 +50,7 @@ const defaultTestimonials: TestimonialData[] = [
     roleKey: 'james_wilson',
     rating: 5,
     commentKey: 'james_wilson',
-    image: '/testimonials/james-wilson.jpg',
+    image: '/testimonials/placeholder.svg',
     location: 'Mwanza',
     date: '2024-02-05'
   }
