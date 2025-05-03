@@ -32,7 +32,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative h-[500px] w-full">
+    <section className="relative h-[400px] sm:h-[450px] md:h-[500px] w-full">
       <div className="absolute inset-0 overflow-hidden">
         <Image 
           src="https://images.pexels.com/photos/1546168/pexels-photo-1546168.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -47,23 +47,23 @@ const Hero = () => {
       </div>
       
       <div className="relative container mx-auto px-4 h-full flex flex-col items-center justify-center">
-        <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 text-center">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-4 sm:mb-6 text-center">
           {t.hero.title}
         </h1>
         
-        <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+        <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-3 sm:mb-4">
             {t.hero.subtitle}
           </h2>
           
-          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MapPin className="h-5 w-5 text-gray-400" />
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary"
+                className="block w-full pl-9 sm:pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary text-sm sm:text-base"
                 placeholder={t.hero.location}
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
@@ -72,7 +72,7 @@ const Hero = () => {
             
             <div className="relative">
               <select
-                className="block w-full pl-3 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary"
+                className="block w-full pl-3 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary text-sm sm:text-base"
                 value={priceRange}
                 onChange={(e) => setPriceRange(e.target.value)}
               >
@@ -86,7 +86,7 @@ const Hero = () => {
             
             <div className="relative">
               <select
-                className="block w-full pl-3 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary"
+                className="block w-full pl-3 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary text-sm sm:text-base"
                 value={rooms}
                 onChange={(e) => setRooms(e.target.value)}
               >

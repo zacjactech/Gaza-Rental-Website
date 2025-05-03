@@ -190,9 +190,12 @@ export default function MapViewPage() {
   ], []);
 
   const handleFilterChange = (field: string, value: string) => {
+    // Use "all" as the value for filtering rather than empty string
+    const processedValue = field === 'propertyType' && value === 'all' ? 'all' : value;
+    
     setFilters(prev => ({
       ...prev,
-      [field]: value
+      [field]: processedValue
     }));
   };
 
@@ -325,10 +328,11 @@ export default function MapViewPage() {
               <div className="px-2">
                 <Slider
                   defaultValue={[0, 1000000]}
+                  min={0}
                   max={1000000}
                   step={50000}
                   value={priceRange}
-                  onValueChange={setPriceRange}
+                  onValueChange={(value: number[]) => setPriceRange(value)}
                   className="my-6"
                 />
                 <div className="flex justify-between mt-2">
@@ -353,7 +357,7 @@ export default function MapViewPage() {
                   <SelectValue placeholder={t?.browse?.search?.propertyTypes?.all || 'All Types'} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t?.browse?.search?.propertyTypes?.all || 'All Types'}</SelectItem>
+                  <SelectItem value="all">{t?.browse?.search?.propertyTypes?.all || 'All Types'}</SelectItem>
                   <SelectItem value="apartment">{t?.browse?.search?.propertyTypes?.apartment || 'Apartment'}</SelectItem>
                   <SelectItem value="house">{t?.browse?.search?.propertyTypes?.house || 'House'}</SelectItem>
                   <SelectItem value="villa">{t?.browse?.search?.propertyTypes?.villa || 'Villa'}</SelectItem>
@@ -430,7 +434,7 @@ export default function MapViewPage() {
         {/* Map and results panel */}
         <div className="flex-1 flex flex-col min-h-[80vh] md:min-h-0">
           {/* Map container */}
-        <div className="flex-1 relative h-[calc(100vh-64px)]" style={{ overflow: 'hidden' }}>
+        <div className="flex-1 relative h-[60vh] md:h-[calc(100vh-64px)]" style={{ overflow: 'hidden' }}>
           <ErrorBoundary>
             {/* Debug status display */}
             {mapStatus.state !== 'loaded' && (
@@ -441,7 +445,7 @@ export default function MapViewPage() {
               ref={mapContainerRef}
                 className="h-full w-full absolute inset-0" 
               style={{ 
-                  minHeight: "600px", 
+                  minHeight: "300px", 
                 height: "100%", 
                 position: "relative",
                 zIndex: 1
