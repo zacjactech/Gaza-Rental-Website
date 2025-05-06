@@ -84,7 +84,6 @@
   }
   
   html, body {
-    @apply overscroll-none; /* Prevent overscroll bounce effects on iOS */
     width: 100%;
     height: 100%;
   }

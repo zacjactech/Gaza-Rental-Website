@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye } from "lucide-react";
-import { EyeOff } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/translations';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
+import { motion } from 'framer-motion';
+import { auth } from '@/lib/api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -46,43 +47,62 @@ export default function RegisterPage() {
     }
   };
 
+  const handleRadioChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      userType: value
+    }));
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      agreeToTerms: checked
+    }));
+    if (errors.agreeToTerms) {
+      setErrors(prev => ({ ...prev, agreeToTerms: '' }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = t?.validation?.firstNameRequired || 'First name is required';
     }
 
     if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = t?.validation?.lastNameRequired || 'Last name is required';
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t?.validation?.emailRequired || 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t?.validation?.emailInvalid || 'Please enter a valid email address';
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long';
+      newErrors.password = t?.validation?.passwordRequired || 'Password is required';
+    } else if (!passwordRegex.test(formData.password)) {
+      newErrors.password = t?.validation?.passwordStrength || 
+        'Password must be at least 8 characters and include uppercase, lowercase, number and special character';
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = t?.validation?.confirmPasswordRequired || 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t?.validation?.passwordsNoMatch || 'Passwords do not match';
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = t?.validation?.phoneRequired || 'Phone number is required';
     } else if (!/^\+?[\d\s-]{10,}$/.test(formData.phone.trim())) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = t?.validation?.phoneInvalid || 'Please enter a valid phone number';
     }
 
     if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
+      newErrors.agreeToTerms = t?.validation?.termsRequired || 'You must agree to the terms and conditions';
     }
 
     setErrors(newErrors);
@@ -94,8 +114,8 @@ export default function RegisterPage() {
     
     if (!validateForm()) {
       toast({
-        title: "Error",
-        description: "Please fix the errors in the form.",
+        title: t?.auth?.register?.errorTitle || "Form Error",
+        description: t?.auth?.register?.validationError || "Please fix the errors in the form.",
         variant: "destructive",
       });
       return;
@@ -104,17 +124,27 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual registration logic here
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated API call
+      // Prepare data for API
+      const registerData = {
+        name: `${formData.firstName} ${formData.lastName}`, 
+        email: formData.email,
+        password: formData.password,
+        role: formData.userType as 'landlord' | 'tenant',
+        phone: formData.phone,
+      };
+      
+      const response = await auth.register(registerData);
+      
       toast({
-        title: "Success!",
-        description: "Your account has been created successfully.",
+        title: t?.auth?.register?.successTitle || "Success!",
+        description: t?.auth?.register?.successMessage || "Your account has been created successfully.",
       });
+      
       router.push('/login');
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to create account. Please try again.",
+        title: t?.auth?.register?.errorTitle || "Registration Failed",
+        description: error.message || t?.auth?.register?.errorMessage || "Failed to create account. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -122,23 +152,45 @@ export default function RegisterPage() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        duration: 0.5,
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/30 bg-cover bg-center py-12 px-4 sm:px-6 lg:px-8" 
-         style={{ backgroundImage: "url('/images/gaza-background.jpg')", backgroundBlendMode: "overlay" }}>
-      <div className="max-w-2xl w-full space-y-8 bg-white/90 dark:bg-gray-800/95 backdrop-blur-sm p-8 rounded-xl shadow-2xl">
-        <div className="text-center">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/30 bg-cover bg-center py-12 px-4 sm:px-6 lg:px-8" 
+      style={{ backgroundImage: "url('/images/gaza-background.jpg')", backgroundBlendMode: "overlay" }}
+    >
+      <div className="max-w-2xl w-full space-y-8 bg-white/90 dark:bg-gray-800/95 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700">
+        <motion.div variants={itemVariants} className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             {t?.auth?.register?.title || 'Create an Account'}
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {t?.auth?.register?.subtitle || 'Join our community of renters and landlords'}
           </p>
-        </div>
+        </motion.div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="firstName">
+            <motion.div variants={itemVariants}>
+              <Label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.auth?.register?.firstName || 'First Name'}
               </Label>
               <Input
@@ -148,15 +200,15 @@ export default function RegisterPage() {
                 required
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className={`mt-1 ${errors.firstName ? 'border-red-500' : ''}`}
+                className={`mt-1 ${errors.firstName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
               />
               {errors.firstName && (
                 <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <Label htmlFor="lastName">
+            <motion.div variants={itemVariants}>
+              <Label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.auth?.register?.lastName || 'Last Name'}
               </Label>
               <Input
@@ -166,15 +218,15 @@ export default function RegisterPage() {
                 required
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className={`mt-1 ${errors.lastName ? 'border-red-500' : ''}`}
+                className={`mt-1 ${errors.lastName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
               />
               {errors.lastName && (
                 <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <Label htmlFor="email">
+            <motion.div variants={itemVariants}>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.auth?.register?.email || 'Email address'}
               </Label>
               <Input
@@ -185,15 +237,15 @@ export default function RegisterPage() {
                 required
                 value={formData.email}
                 onChange={handleInputChange}
-                className={`mt-1 ${errors.email ? 'border-red-500' : ''}`}
+                className={`mt-1 ${errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-500">{errors.email}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <Label htmlFor="phone">
+            <motion.div variants={itemVariants}>
+              <Label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.auth?.register?.phone || 'Phone Number'}
               </Label>
               <Input
@@ -203,16 +255,16 @@ export default function RegisterPage() {
                 required
                 value={formData.phone}
                 onChange={handleInputChange}
-                className={`mt-1 ${errors.phone ? 'border-red-500' : ''}`}
+                className={`mt-1 ${errors.phone ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                 placeholder="+255"
               />
               {errors.phone && (
                 <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <Label htmlFor="password">
+            <motion.div variants={itemVariants}>
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.auth?.register?.password || 'Password'}
               </Label>
               <div className="relative mt-1">
@@ -223,7 +275,7 @@ export default function RegisterPage() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`pr-10 ${errors.password ? 'border-red-500' : ''}`}
+                  className={`pr-10 ${errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                 />
                 <button
                   type="button"
@@ -240,10 +292,10 @@ export default function RegisterPage() {
               {errors.password && (
                 <p className="mt-1 text-sm text-red-500">{errors.password}</p>
               )}
-            </div>
+            </motion.div>
 
-            <div>
-              <Label htmlFor="confirmPassword">
+            <motion.div variants={itemVariants}>
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.auth?.register?.confirmPassword || 'Confirm Password'}
               </Label>
               <div className="relative mt-1">
@@ -254,7 +306,7 @@ export default function RegisterPage() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                  className={`pr-10 ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                 />
                 <button
                   type="button"
@@ -271,86 +323,95 @@ export default function RegisterPage() {
               {errors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
               )}
-            </div>
+            </motion.div>
           </div>
 
-          <div className="space-y-4">
+          <motion.div variants={itemVariants} className="space-y-4">
             <div>
-              <Label>
-                {t?.auth?.register?.userType || 'I am a'}
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t?.auth?.register?.userType || 'I am a:'}
               </Label>
-              <RadioGroup
-                value={formData.userType}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, userType: value }))}
-                className="flex space-x-4 mt-2"
+              <RadioGroup 
+                value={formData.userType} 
+                onValueChange={handleRadioChange}
+                className="flex mt-2 space-x-6"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="tenant" id="tenant" />
-                  <Label htmlFor="tenant">{t?.auth?.register?.tenant || 'Tenant'}</Label>
+                  <Label htmlFor="tenant" className="cursor-pointer">
+                    {t?.auth?.register?.tenant || 'Tenant'}
+                  </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="landlord" id="landlord" />
-                  <Label htmlFor="landlord">{t?.auth?.register?.landlord || 'Landlord'}</Label>
+                  <Label htmlFor="landlord" className="cursor-pointer">
+                    {t?.auth?.register?.landlord || 'Landlord'}
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="agreeToTerms"
-                name="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ ...prev, agreeToTerms: checked as boolean }))
-                }
-              />
-              <Label
-                htmlFor="agreeToTerms"
-                className={`text-sm ${errors.agreeToTerms ? 'text-red-500' : ''}`}
-              >
-                {t?.auth?.register?.agreeTerms || 'I agree to the'}{' '}
-                <Link
-                  href="/terms"
-                  className="text-primary hover:text-primary/90"
+            <div className="flex items-start">
+              <div className="flex items-center h-5">
+                <Checkbox 
+                  id="terms" 
+                  checked={formData.agreeToTerms}
+                  onCheckedChange={handleCheckboxChange}
+                  className={errors.agreeToTerms ? "border-red-500" : ""}
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <Label 
+                  htmlFor="terms" 
+                  className={`font-medium ${errors.agreeToTerms ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}
                 >
-                  {t?.auth?.register?.terms || 'Terms and Conditions'}
-                </Link>
-              </Label>
+                  {t?.auth?.register?.agreeToTerms || 'I agree to the '}
+                  <Link href="/terms" className="text-primary hover:text-primary/90 hover:underline">
+                    {t?.auth?.register?.termsLink || 'Terms of Service'}
+                  </Link>
+                  {' '}{t?.auth?.register?.andThe || 'and the'}{' '}
+                  <Link href="/privacy" className="text-primary hover:text-primary/90 hover:underline">
+                    {t?.auth?.register?.privacyLink || 'Privacy Policy'}
+                  </Link>
+                </Label>
+                {errors.agreeToTerms && (
+                  <p className="mt-1 text-sm text-red-500">{errors.agreeToTerms}</p>
+                )}
+              </div>
             </div>
-            {errors.agreeToTerms && (
-              <p className="text-sm text-red-500">{errors.agreeToTerms}</p>
-            )}
-          </div>
+          </motion.div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {t?.auth?.register?.creating || 'Creating account...'}
-              </span>
-            ) : (
-              t?.auth?.register?.create || 'Create Account'
-            )}
-          </Button>
-
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-            {t?.auth?.register?.haveAccount || 'Already have an account?'}{' '}
-            <Link
-              href="/login"
-              className="font-medium text-primary hover:text-primary/90"
+          <motion.div variants={itemVariants}>
+            <Button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2"
+              disabled={isLoading}
             >
-              {t?.auth?.register?.signIn || 'Sign in'}
-            </Link>
-          </p>
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {t?.auth?.register?.creatingAccount || 'Creating account...'}
+                </span>
+              ) : (
+                <>
+                  <UserPlus className="h-5 w-5" />
+                  {t?.auth?.register?.createAccount || 'Create Account'}
+                </>
+              )}
+            </Button>
+
+            <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+              {t?.auth?.register?.alreadyHaveAccount || 'Already have an account?'}{' '}
+              <Link href="/login" className="font-medium text-primary hover:text-primary/90 hover:underline">
+                {t?.auth?.register?.signIn || 'Sign in'}
+              </Link>
+            </p>
+          </motion.div>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 } 

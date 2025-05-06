@@ -461,23 +461,113 @@ export default function BrowsePage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {filteredProperties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProperties.map((property) => (
-              <PropertyCard 
-                key={property.id} 
-                property={property}
-              />
+      <div className="container py-8">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full">
+            {showFilters && (
+              <div className="md:hidden mb-6 bg-white dark:bg-gray-800 rounded-xl shadow p-5 space-y-5">
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium">
+                      {t?.browse?.search?.filters?.bedrooms}
+                    </Label>
+                    <Select
+                      value={filters.bedrooms}
+                      onValueChange={(value) => handleFilterChange('bedrooms', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any</SelectItem>
+                        {[1, 2, 3, 4, '4+'].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">
+                      {t?.browse?.search?.filters?.bathrooms}
+                    </Label>
+                    <Select
+                      value={filters.bathrooms}
+                      onValueChange={(value) => handleFilterChange('bathrooms', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any</SelectItem>
+                        {[1, 2, '3+'].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <Label className="text-sm font-medium">
+                    Price Range (TZS)
+                  </Label>
+                  <div className="pt-2">
+                    <Slider
+                      defaultValue={[filters.minPrice, filters.maxPrice]}
+                      max={1000000}
+                      step={10000}
+                      onValueChange={(value) => {
+                        handleFilterChange('minPrice', value[0]);
+                        handleFilterChange('maxPrice', value[1]);
+                      }}
+                    />
+                    <div className="flex justify-between mt-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {filters.minPrice.toLocaleString()} TZS
+                      </span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {filters.maxPrice.toLocaleString()} TZS
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">
+                    {t?.browse?.search?.filters?.amenities}
+                  </Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {amenityOptions.map((amenity) => (
+                      <Button
+                        key={amenity.id}
+                        variant={filters.amenities.includes(amenity.id) ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleAmenityToggle(amenity.id)}
+                        className="flex items-center gap-1.5"
+                      >
+                        <span>{amenity.icon}</span>
+                        {t?.property?.amenities?.[amenity.id as keyof typeof t.property.amenities] as string}
+                      </Button>
             ))}
           </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProperties.length > 0 ? (
+                filteredProperties.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
-              {t?.browse?.search?.noResults}
-            </p>
+                <div className="col-span-full py-10 text-center text-gray-500">
+                  <p>{t?.browse?.search?.noResults}</p>
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
       <Footer />

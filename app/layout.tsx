@@ -33,13 +33,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'GazaRenter - Find Your Home in Tanzania',
-  description: 'Tanzania\'s premier house rental platform connecting landlords and tenants with verified listings and secure booking.',
-  other: {
-    'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'format-detection': 'telephone=no',
-  }
+  title: 'Gaza Rental',
+  description: 'Find your perfect rental property in Gaza',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -58,19 +56,20 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="system"
           enableSystem
+          disableTransitionOnChange
         >
           <LanguageProvider>
             <Header />
-            <PageTransition>
+            <div suppressHydrationWarning>
               <Suspense fallback={<div className="container py-8">Loading...</div>}>
-              {children}
+                {children}
               </Suspense>
-            </PageTransition>
+            </div>
             <ScrollToTop />
             <Toaster />
           </LanguageProvider>

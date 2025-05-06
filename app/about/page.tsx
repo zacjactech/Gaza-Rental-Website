@@ -83,6 +83,7 @@ export default function AboutPage() {
                   src="/images/about-mission.jpg" 
                   alt="Our Mission"
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
                   style={{ objectFit: 'cover' }}
                   className="rounded-lg"
                 />

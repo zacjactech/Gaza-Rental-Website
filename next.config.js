@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   images: {
     remotePatterns: [
@@ -15,6 +15,16 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '**',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
@@ -24,10 +34,12 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   webpack: (config, { dev, isServer }) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-    };
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
 
     // Add terser for better JS minification
     if (!dev && !isServer) {
@@ -122,10 +134,7 @@ const nextConfig = {
     return config;
   },
   experimental: {
-    optimizeCss: true,
-    optimisticClientCache: true,
-    scrollRestoration: true,
-    webVitalsAttribution: ['CLS', 'LCP'],
+    // Server Actions are now enabled by default
   },
   swcMinify: true,
   compress: true,
@@ -142,8 +151,6 @@ const nextConfig = {
   compiler: {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production',
-    // Enable optimization
-    styledComponents: true,
   },
   output: 'standalone',
   // HTTP response headers configuration
@@ -164,6 +171,14 @@ const nextConfig = {
           value: '1; mode=block',
         },
         {
+          key: 'Referrer-Policy',
+          value: 'strict-origin-when-cross-origin',
+        },
+        {
+          key: 'Permissions-Policy',
+          value: 'camera=(), microphone=(), geolocation=()',
+        },
+        {
           key: 'Cache-Control',
           value: 'public, max-age=3600, must-revalidate',
         },
@@ -175,6 +190,18 @@ const nextConfig = {
         {
           key: 'Cache-Control',
           value: 'no-cache, no-store, max-age=0, must-revalidate',
+        },
+        {
+          key: 'X-Content-Type-Options',
+          value: 'nosniff',
+        },
+        {
+          key: 'X-Frame-Options',
+          value: 'DENY',
+        },
+        {
+          key: 'X-XSS-Protection',
+          value: '1; mode=block',
         },
       ],
     },

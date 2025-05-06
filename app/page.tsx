@@ -9,6 +9,7 @@ import { translations } from '@/translations';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 
 // Dynamically import non-critical components
 const MapCTA = dynamic(() => import('@/components/MapCTA'), {
@@ -20,17 +21,15 @@ const TrustFactors = dynamic(() => import('@/components/TrustFactors'), {
   loading: () => <div className="h-60 bg-white dark:bg-gray-700 animate-pulse"></div>,
 });
 
-const Testimonials = dynamic(() => import('@/components/Testimonials'), {
-  loading: () => <div className="h-96 bg-gray-50 dark:bg-gray-900 animate-pulse"></div>,
-});
+// Import Testimonials directly instead of using dynamic import to fix the bootstrap script error
+import Testimonials from '@/components/Testimonials';
 
 const Features = dynamic(() => import('@/components/Features'), {
   loading: () => <div className="h-80 bg-white dark:bg-gray-800 animate-pulse"></div>,
 });
 
-const Footer = dynamic(() => import('@/components/Footer'), {
-  ssr: true,
-});
+// Load Footer directly to ensure it's always available
+import Footer from '@/components/Footer';
 
 export default function Home() {
   const { language } = useLanguage();
@@ -113,7 +112,7 @@ export default function Home() {
       roleKey: 'john_doe',
       rating: 5,
       commentKey: 'john_doe',
-      image: '/testimonials/john-doe.jpg',
+      image: '/testimonials/placeholder.svg',
       location: 'Dar es Salaam',
       date: '2024-02-15'
     },
@@ -123,7 +122,7 @@ export default function Home() {
       roleKey: 'mary_smith',
       rating: 5,
       commentKey: 'mary_smith',
-      image: '/testimonials/mary-smith.jpg',
+      image: '/testimonials/placeholder.svg',
       location: 'Arusha',
       date: '2024-02-10'
     },
@@ -133,7 +132,7 @@ export default function Home() {
       roleKey: 'james_wilson',
       rating: 5,
       commentKey: 'james_wilson',
-      image: '/testimonials/james-wilson.jpg',
+      image: '/testimonials/placeholder.svg',
       location: 'Mwanza',
       date: '2024-02-05'
     }
@@ -196,7 +195,9 @@ export default function Home() {
         </div>
       </section>
 
+      <Suspense fallback={<div className="h-96 bg-gray-50 dark:bg-gray-900 animate-pulse"></div>}>
       <Testimonials testimonials={testimonials} />
+      </Suspense>
 
       <Footer />
     </main>

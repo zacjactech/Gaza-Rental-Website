@@ -60,7 +60,7 @@ const Header = () => {
               className={`${isActive('/about')} hover:text-primary transition-all duration-200 hover:scale-105 py-1 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800`}
               prefetch={true}
             >
-              {t.footer.quickLinks.about}
+              {t.nav?.about || "About Us"}
             </Link>
             <Link 
               href="/contact"
@@ -76,7 +76,7 @@ const Header = () => {
               prefetch={true}
             >
               <Building className="h-3.5 w-3.5 inline mr-1" />
-              {t.footer.quickLinks.landlords}
+              {t.nav?.landlords || "Landlords"}
             </Link>
           </nav>
 
@@ -115,7 +115,8 @@ const Header = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               variant="ghost"
               size="icon"
-              className="text-gray-700 dark:text-gray-300 h-8 w-8 p-1"
+              className="h-8 w-8 p-1"
+              aria-label="Toggle menu"
             >
               {isMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -153,7 +154,7 @@ const Header = () => {
               onClick={closeMenu}
               prefetch={true}
             >
-              {t.footer.quickLinks.about}
+              {t.nav?.about || "About Us"}
             </Link>
             <Link 
               href="/contact"
@@ -171,7 +172,7 @@ const Header = () => {
               prefetch={true}
             >
               <Building className="h-3.5 w-3.5 inline mr-1" />
-              {t.footer.quickLinks.landlords}
+              {t.nav?.landlords || "Landlords"}
             </Link>
             <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden w-fit mt-2">
               <Button 

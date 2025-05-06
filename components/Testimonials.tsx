@@ -99,6 +99,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: TestimonialData }) => {
               src={testimonial.image}
               alt={getName()}
               fill
+              sizes="(max-width: 768px) 100vw, 64px"
               className="object-cover"
               onError={() => setImageError(true)}
             />

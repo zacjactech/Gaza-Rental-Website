@@ -11,6 +11,8 @@ export type TranslationType = {
       favorites: string;
       notifications: string;
       contact: string;
+      about?: string;
+      landlords?: string;
     };
     common: {
       backToHome: string;
@@ -29,6 +31,27 @@ export type TranslationType = {
       more: string;
       less: string;
     };
+    footer?: {
+      quickLinks?: string;
+      support?: string;
+      contactUs?: string;
+      terms?: string;
+      privacy?: string;
+      faq?: string;
+      newsletterTitle?: string;
+      newsletterText?: string;
+      emailPlaceholder?: string;
+      subscribe?: string;
+      subscribing?: string;
+      subscribeSuccess?: string;
+      subscribeMessage?: string;
+      subscribeError?: string;
+      subscribeErrorMessage?: string;
+      companyDescription?: string;
+      allRightsReserved?: string;
+      madeWith?: string;
+      inGaza?: string;
+    };
     auth: {
       login: {
         [key: string]: string;
@@ -42,6 +65,13 @@ export type TranslationType = {
       resetPassword: {
         [key: string]: string;
       };
+    };
+    accessibility?: {
+      decreaseFont: string;
+      increaseFont: string;
+      highContrast: string;
+      keyboardNav: string;
+      screenReader: string;
     };
     [key: string]: any;
   };
@@ -58,7 +88,9 @@ export const translations: TranslationType = {
       profile: 'Profile',
       favorites: 'Favorites',
       notifications: 'Notifications',
-      contact: 'Contact Us'
+      contact: 'Contact Us',
+      about: 'About Us',
+      landlords: 'Landlords'
     },
     common: {
       backToHome: 'Back to Home',
@@ -76,6 +108,27 @@ export const translations: TranslationType = {
       sort: 'Sort',
       more: 'More',
       less: 'Less'
+    },
+    footer: {
+      quickLinks: 'Quick Links',
+      support: 'Support',
+      contactUs: 'Contact Us',
+      terms: 'Terms & Conditions',
+      privacy: 'Privacy Policy',
+      faq: 'FAQ',
+      newsletterTitle: 'Stay Updated',
+      newsletterText: 'Subscribe to our newsletter for the latest property listings and housing tips.',
+      emailPlaceholder: 'Your email address',
+      subscribe: 'Subscribe',
+      subscribing: 'Subscribing...',
+      subscribeSuccess: 'Success!',
+      subscribeMessage: 'Thank you for subscribing to our newsletter.',
+      subscribeError: 'Error',
+      subscribeErrorMessage: 'Failed to subscribe. Please try again.',
+      companyDescription: 'Your trusted platform for finding the perfect rental property in Gaza. We connect landlords and tenants with ease and security.',
+      allRightsReserved: 'All rights reserved.',
+      madeWith: 'Made with',
+      inGaza: 'in Gaza'
     },
     auth: {
       login: {
@@ -305,62 +358,16 @@ export const translations: TranslationType = {
         error: 'Error sending message. Please try again.'
       }
     },
-    footer: {
-      about: {
-        title: 'About GazaRenter',
-        description: 'Tanzania\'s premier rental platform connecting quality properties with great tenants.'
-      },
-      quickLinks: {
-        title: 'Quick Links',
-        home: 'Home',
-        browse: 'Browse Properties',
-        mapView: 'Map View',
-        landlords: 'For Landlords',
-        about: 'About Us',
-        contact: 'Contact Us',
-        help: 'Help Center'
-      },
-      cities: {
-        title: 'Popular Cities',
-        darEsSalaam: 'Dar es Salaam',
-        arusha: 'Arusha',
-        mwanza: 'Mwanza',
-        dodoma: 'Dodoma',
-        zanzibar: 'Zanzibar',
-        tanga: 'Tanga'
-      },
-      contact: {
-        title: 'Contact Us',
-        email: 'Jumachambala@gmail.com',
-        phone: '+255 654051913',
-        address: 'Dar es Salaam, Tanzania',
-        hours: 'Mon - Sat: 9:00 AM - 6:00 PM'
-      },
-      social: {
-        title: 'Follow Us',
-        facebook: 'Facebook',
-        twitter: 'Twitter',
-        instagram: 'Instagram',
-        linkedin: 'LinkedIn'
-      },
-      legal: {
-        title: 'Legal',
-        terms: 'Terms of Service',
-        privacy: 'Privacy Policy',
-        cookies: 'Cookie Policy'
-      },
-      copyright: '© 2024 GazaRenter. All rights reserved.'
-    },
     contact: {
       title: 'Contact Us',
       subtitle: 'Get in touch with our team',
       form: {
-      name: 'Your Name',
-      email: 'Email Address',
+        name: 'Your Name',
+        email: 'Email Address',
         phone: 'Phone Number',
-      message: 'Your Message',
-      send: 'Send Message',
-      sending: 'Sending...',
+        message: 'Your Message',
+        send: 'Send Message',
+        sending: 'Sending...',
         success: 'Your message has been sent successfully',
         error: 'Failed to send your message'
       },
@@ -629,6 +636,13 @@ export const translations: TranslationType = {
           }
         }
       }
+    },
+    accessibility: {
+      decreaseFont: 'Decrease font size',
+      increaseFont: 'Increase font size',
+      highContrast: 'Toggle high contrast mode',
+      keyboardNav: 'Toggle keyboard navigation',
+      screenReader: 'Toggle screen reader mode'
     }
   },
   sw: {
@@ -641,7 +655,9 @@ export const translations: TranslationType = {
       profile: 'Wasifu',
       favorites: 'Vipendwa',
       notifications: 'Taarifa',
-      contact: 'Wasiliana Nasi'
+      contact: 'Wasiliana Nasi',
+      about: 'Kuhusu Sisi',
+      landlords: 'Wamiliki wa Nyumba'
     },
     common: {
       backToHome: 'Rudi Nyumbani',
@@ -659,6 +675,27 @@ export const translations: TranslationType = {
       sort: 'Panga',
       more: 'Zaidi',
       less: 'Punguza'
+    },
+    footer: {
+      quickLinks: 'Viungo vya Haraka',
+      support: 'Msaada',
+      contactUs: 'Wasiliana Nasi',
+      terms: 'Sheria na Masharti',
+      privacy: 'Sera ya Faragha',
+      faq: 'Maswali Yanayoulizwa Mara kwa Mara',
+      newsletterTitle: 'Pata Taarifa',
+      newsletterText: 'Jiandikishe kwenye jarida letu la habari kwa orodha mpya ya nyumba na vidokezo vya makazi.',
+      emailPlaceholder: 'Anwani yako ya barua pepe',
+      subscribe: 'Jiandikishe',
+      subscribing: 'Inajiandikisha...',
+      subscribeSuccess: 'Imefanikiwa!',
+      subscribeMessage: 'Asante kwa kujiandikisha kwenye jarida letu la habari.',
+      subscribeError: 'Hitilafu',
+      subscribeErrorMessage: 'Imeshindwa kujiandikisha. Tafadhali jaribu tena.',
+      companyDescription: 'Jukwaa lako la kuaminika la kutafuta nyumba bora ya kupanga katika Gaza. Tunaunganisha wamiliki wa nyumba na wapangaji kwa urahisi na usalama.',
+      allRightsReserved: 'Haki zote zimehifadhiwa.',
+      madeWith: 'Imetengenezwa kwa',
+      inGaza: 'katika Gaza'
     },
     auth: {
       login: {
@@ -888,62 +925,16 @@ export const translations: TranslationType = {
         error: 'Hitilafu kutuma ujumbe. Tafadhali jaribu tena.'
       }
     },
-    footer: {
-      about: {
-        title: 'Kuhusu GazaRenter',
-        description: 'Jukwaa bora la kukodisha nyumba Tanzania linalounganisha nyumba bora na wapangaji wazuri.'
-      },
-      quickLinks: {
-        title: 'Viungo vya Haraka',
-        home: 'Nyumbani',
-        browse: 'Tafuta Nyumba',
-        mapView: 'Ramani',
-        landlords: 'Kwa Wamiliki',
-        about: 'Kuhusu Sisi',
-        contact: 'Wasiliana Nasi',
-        help: 'Kituo cha Msaada'
-      },
-      cities: {
-        title: 'Miji Maarufu',
-        darEsSalaam: 'Dar es Salaam',
-        arusha: 'Arusha',
-        mwanza: 'Mwanza',
-        dodoma: 'Dodoma',
-        zanzibar: 'Zanzibar',
-        tanga: 'Tanga'
-      },
-      contact: {
-        title: 'Wasiliana Nasi',
-        email: 'Jumachambala@gmail.com',
-        phone: '+255 654051913',
-        address: 'Dar es Salaam, Tanzania',
-        hours: 'Jumatatu - Jumamosi: 9:00 AM - 6:00 PM'
-      },
-      social: {
-        title: 'Tufuate',
-        facebook: 'Facebook',
-        twitter: 'Twitter',
-        instagram: 'Instagram',
-        linkedin: 'LinkedIn'
-      },
-      legal: {
-        title: 'Kisheria',
-        terms: 'Masharti ya Huduma',
-        privacy: 'Sera ya Faragha',
-        cookies: 'Sera ya Vidakuzi'
-      },
-      copyright: '© 2024 GazaRenter. Haki zote zimehifadhiwa.'
-    },
     contact: {
       title: 'Wasiliana Nasi',
       subtitle: 'Wasiliana na timu yetu',
       form: {
-      name: 'Jina Lako',
-      email: 'Barua Pepe',
+        name: 'Jina Lako',
+        email: 'Barua Pepe',
         phone: 'Namba ya Simu',
-      message: 'Ujumbe Wako',
-      send: 'Tuma Ujumbe',
-      sending: 'Inatuma...',
+        message: 'Ujumbe Wako',
+        send: 'Tuma Ujumbe',
+        sending: 'Inatuma...',
         success: 'Ujumbe wako umetumwa kwa mafanikio',
         error: 'Imeshindwa kutuma ujumbe wako'
       },
@@ -1262,6 +1253,13 @@ export const translations: TranslationType = {
           }
         }
       }
+    },
+    accessibility: {
+      decreaseFont: 'Punguza saizi ya herufi',
+      increaseFont: 'Ongeza saizi ya herufi',
+      highContrast: 'Badilisha hali ya tofauti kubwa',
+      keyboardNav: 'Badilisha urambazaji wa kibodi',
+      screenReader: 'Badilisha hali ya kusoma skrini'
     }
   }
 }; 
